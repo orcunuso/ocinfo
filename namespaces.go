@@ -15,17 +15,7 @@ type resourceQuota struct {
 	memLimit   string
 }
 
-func getEgressIP(apiurl string, token string) string {
-	body, status := getRest(apiurl, token)
-	if status == 404 {
-		return "NotFound"
-	}
-
-	egressIP := gjson.GetBytes(body, "egressIPs.0")
-	return egressIP.String()
-}
-
-func getEgressIP2(body []byte, namespace string) string {
+func getEgressIP(body []byte, namespace string) string {
 	var returnValue string = "nil"
 	items := gjson.GetBytes(body, "items")
 	items.ForEach(func(key, value gjson.Result) bool {
@@ -135,12 +125,10 @@ func getNamespaces() {
 			csvData = append(csvData, vars[6].String())            // Namespace SCC.UID-Range
 			csvData = append(csvData, vars[7].String())            // Company Specific Label: RequestID
 			csvData = append(csvData, vars[8].String())            // Company Specific Label: ServiceID
-			if statusNet == 404 {
-				// This probably means that OpenShiftSDN is not implemented
+			if statusNet == 404 {                                  // This probably means that OpenShiftSDN is not implemented
 				csvData = append(csvData, "NotImplemented")
 			} else {
-				//csvData = append(csvData, getEgressIP(apiurlNet+"/"+ns, cfg.Clusters[i].Token))
-				csvData = append(csvData, getEgressIP2(bodyNet, ns))
+				csvData = append(csvData, getEgressIP(bodyNet, ns))
 			}
 			csvData = append(csvData, pt)                // Total Pod Count
 			csvData = append(csvData, pr)                // Running Pod Count
