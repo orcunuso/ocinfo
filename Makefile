@@ -1,9 +1,9 @@
 binary = ocinfo
 
-linux:
+lin:
 	GOOS=linux GOARCH=amd64 go build -o ./bin/$(binary)
 
-windows:
+win:
 	GOOS=windows GOARCH=amd64 go build -o ./bin/$(binary).exe
 
 compile_all:
