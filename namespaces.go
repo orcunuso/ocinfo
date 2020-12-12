@@ -1,0 +1,161 @@
+package main
+
+import (
+	"strings"
+	"time"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/tidwall/gjson"
+)
+
+type resourceQuota struct {
+	cpuRequest string
+	cpuLimit   string
+	memRequest string
+	memLimit   string
+}
+
+func getEgressIP(apiurl string, token string) string {
+	body, status := getRest(apiurl, token)
+	if status == 404 {
+		return "NotFound"
+	}
+
+	egressIP := gjson.GetBytes(body, "egressIPs.0")
+	return egressIP.String()
+}
+
+func getEgressIP2(body []byte, namespace string) string {
+	var returnValue string = "nil"
+	items := gjson.GetBytes(body, "items")
+	items.ForEach(func(key, value gjson.Result) bool {
+		vars := gjson.GetMany(value.String(), `metadata.name`, `egressIPs.0`)
+		if vars[0].String() == namespace {
+			returnValue = vars[1].String()
+			return false
+		}
+		return true
+	})
+	return returnValue
+}
+
+// This function can be deleted in the near future
+func getQuota(apiurl string, token string) resourceQuota {
+	body, _ := getRest(apiurl, token)
+	vars := gjson.GetManyBytes(body,
+		"spec.hard.requests\\.cpu",
+		"spec.hard.limits\\.cpu",
+		"spec.hard.requests\\.memory",
+		"spec.hard.limits\\.memory")
+	rq := resourceQuota{}
+	rq.cpuRequest = vars[0].String()
+	rq.cpuLimit = vars[1].String()
+	rq.memRequest = vars[2].String()
+	rq.memLimit = vars[3].String()
+	return rq
+}
+
+func getNsType(displayName string) string {
+	if strings.HasPrefix(displayName, "TURKCELL") {
+		return "application"
+	}
+	return "system"
+}
+
+func getPodCount(apiurl string, token string) (int, int) {
+	podTotal, podRunning := 0, 0
+	body, _ := getRest(apiurl, token)
+	items := gjson.GetBytes(body, "items")
+	items.ForEach(func(key, value gjson.Result) bool {
+		podTotal++
+		phase := gjson.Get(value.String(), "status.phase")
+		if phase.String() == "Running" {
+			podRunning++
+		}
+		return true
+	})
+	return podTotal, podRunning
+}
+
+func getNamespaces() {
+
+	var csvHeader = []string{"Cluster", "Name", "Type", "DisplayName", "Description", "Requester", "NodeSelector", "SCC.MCS", "SCC.UIDRange", "RequestID", "ServiceID",
+		"EgressIP", "TotalPods", "RunningPods", "CreationTime", "Version", "UID"}
+	var csvData []interface{}
+	var startTime time.Time
+	var duration time.Duration
+	var xR int = 1
+	var sheetName string = "Namespaces"
+	var apiurl, apiurlNet string
+
+	// Initialize Excel sheet
+	index := xf.NewSheet(sheetName)
+	xf.SetActiveSheet(index)
+	xf.SetSheetRow(sheetName, "A1", &csvHeader)
+
+	info.Printf("%s: Section started\n", sheetName)
+	startTime = time.Now()
+
+	for i := 0; i < len(cfg.Clusters); i++ {
+		if !cfg.Clusters[i].Enable {
+			continue
+		}
+		boolCheck, msg := checkClusterAPI(cfg.Clusters[i].BaseURL, cfg.Clusters[i].Token)
+		if !boolCheck {
+			erro.Printf("%s: %s: %s\n", sheetName, cfg.Clusters[i].Name, msg)
+			continue
+		}
+		info.Printf("%s: Working on %s\n", sheetName, cfg.Clusters[i].Name)
+
+		apiurl = cfg.Clusters[i].BaseURL + "/api/v1/namespaces"
+		apiurlNet = cfg.Clusters[i].BaseURL + "/apis/network.openshift.io/v1/netnamespaces"
+		body, _ := getRest(apiurl, cfg.Clusters[i].Token)
+		bodyNet, statusNet := getRest(apiurlNet, cfg.Clusters[i].Token)
+
+		// Loop in list items and export data into Excel file
+		items := gjson.GetBytes(body, "items")
+		items.ForEach(func(key, value gjson.Result) bool {
+			vars := gjson.GetMany(value.String(),
+				`metadata.name`, `metadata.annotations.openshift\.io/display-name`, `metadata.annotations.openshift\.io/description`, `metadata.annotations.openshift\.io/requester`,
+				`metadata.annotations.openshift\.io/node-selector`, `metadata.annotations.openshift\.io/sa\.scc\.mcs`, `metadata.annotations.openshift\.io/sa\.scc\.uid-range`,
+				`metadata.labels.tcrequestid`, `metadata.labels.tcserviceid`, `metadata.creationTimestamp`, `metadata.resourceVersion`, `metadata.uid`)
+
+			ns := vars[0].String()
+			pt, pr := getPodCount(apiurl+"/"+ns+"/pods", cfg.Clusters[i].Token)
+
+			csvData = nil
+			csvData = append(csvData, cfg.Clusters[i].Name)        // Cluster Name
+			csvData = append(csvData, ns)                          // Namespace Name
+			csvData = append(csvData, getNsType(vars[1].String())) // Namespace Type
+			csvData = append(csvData, vars[1].String())            // Namespace Display Name
+			csvData = append(csvData, vars[2].String())            // Namespace Description
+			csvData = append(csvData, vars[3].String())            // Namespace Requester
+			csvData = append(csvData, vars[4].String())            // Namespace NodeSelector
+			csvData = append(csvData, vars[5].String())            // Namespace SCC.MCS
+			csvData = append(csvData, vars[6].String())            // Namespace SCC.UID-Range
+			csvData = append(csvData, vars[7].String())            // Company Specific Label: RequestID
+			csvData = append(csvData, vars[8].String())            // Company Specific Label: ServiceID
+			if statusNet == 404 {
+				// This probably means that OpenShiftSDN is not implemented
+				csvData = append(csvData, "NotImplemented")
+			} else {
+				//csvData = append(csvData, getEgressIP(apiurlNet+"/"+ns, cfg.Clusters[i].Token))
+				csvData = append(csvData, getEgressIP2(bodyNet, ns))
+			}
+			csvData = append(csvData, pt)                // Total Pod Count
+			csvData = append(csvData, pr)                // Running Pod Count
+			csvData = append(csvData, vars[9].String())  // Creation Timestamp
+			csvData = append(csvData, vars[10].String()) // Resource Version
+			csvData = append(csvData, vars[11].String()) // UID
+
+			xR++
+			cell, _ := excelize.CoordinatesToCellName(1, xR)
+			xf.SetSheetRow(sheetName, cell, &csvData)
+			return true
+		})
+	}
+	formatTable(sheetName, len(csvHeader))
+
+	duration = time.Since(startTime)
+	info.Printf("%s: Section ended in %s\n", sheetName, duration)
+}
