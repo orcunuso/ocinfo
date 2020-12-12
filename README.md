@@ -1,8 +1,6 @@
-# OCinfo
-
 ![OCinfo](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo.png?raw=true)
 
-OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple OpenShift clusters and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the read-only credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
+OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple OpenShift clusters and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
 
 ## Installation
 
@@ -18,4 +16,55 @@ If you don't have an installed go environment, you can also download pre-compile
 
 ## Preperation
 
-There are two things that need to be configured or checked before running OCinfo;
+There are a few things that need to be configured or checked before running OCinfo;
+
+1. Make sure that the platform running OCinfo has network access to all OpenShift APIs
+2. A YAML file is created to configure OCinfo
+3. A service account token from all OpenShift clusters
+
+### OCinfo configuration
+
+OCinfo expects a YAML file to be given as an input to get more information about the OpenShift clusters that it will connect to and some configuration details related with spreadsheet document as the output. OCinfo will look for a file named `ocinfo.yaml` in working directory but this behavior can be altered with flag `-f`.
+
+An example file exists in `./conf` directory and it looks like this;
+
+```yaml
+clusters:
+- name: cluster1
+  enable: true
+  baseURL: "https://api.cluster1.orcunuso.io:6443"
+  token: "eyJhbGciOiJSUzI1.........YKWA8UfWzLsuwjfEPphPPlwa7SA"
+  quota: "quota-compute"
+- name: cluster2
+  enable: false
+  baseURL: "https://api.cluster2.orcunuso.io:6443"
+  token: "eyJhbGciOiJSIk94.........RWNRb21fRHMwQkxBhdXliT2NQWF"
+  quota: "quota-compute"
+sheets:
+  alerts: true
+  nodes: true
+  machines: true
+  namespaces: true
+  nsquotas: true
+  services: true
+  pvolumes: true
+```
+
+### Creating service accounts
+
+OCinfo needs a service account that has readonly permissions to get data from OpenShift and **cluster-reader** cluster role is a very proper candidate for this task but there is only one requirement that this role does not fulfil. OCinfo needs to read secrets, to be more specific, needs to get the token of openshift-monitoring/prometheus-k8s service account. So we need to create a custom cluster role that we can derive from cluster-reader and only grant additional read permissions to secrets.
+
+This task needs to be performed on every OpenShift cluster that we will extract data from. 
+
+```bash
+oc apply -f conf/clusterrole-ocinfo.yaml
+oc create project ocinfo
+oc create sa ocinfo -n ocinfo
+oc adm policy add-cluster-role-to-user custom-ocinfo -z ocinfo --rolebinding-name=custom-ocinfo -n ocinfo
+```
+
+Finally, we need to get the token of our service account and add it into our YAML file.
+
+```bash
+oc sa get-token ocinfo -n ocinfo
+```
