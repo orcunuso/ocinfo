@@ -50,6 +50,11 @@ sheets:
   pvolumes: true
 ```
 
+I believe there are two items which are not self explanatory enough here, quota and sheets. 
+
+* The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.
+* The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item. 
+
 ### Creating service accounts
 
 OCinfo needs a service account that has readonly permissions to get data from OpenShift and **cluster-reader** cluster role is a very proper candidate for this task but there is only one requirement that this role does not fulfil. OCinfo needs to read secrets, to be more specific, needs to get the token of openshift-monitoring/prometheus-k8s service account. So we need to create a custom cluster role that we can derive from cluster-reader and only grant additional read permissions to secrets.
