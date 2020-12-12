@@ -1,0 +1,19 @@
+# Binaries
+bin/
+
+# General Purpose
+*.crt
+*.key
+*.log
+*.rpm
+*.tgz
+*.xlsx
+*.sh.source
+*.gone
+
+# Terraform Files
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfout
+**/.terraform/*

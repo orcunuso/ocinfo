@@ -1,0 +1,20 @@
+clusters:
+- name: cluster1
+  enable: true
+  baseURL: "https://api.cluster1.orcunuso.io:6443"
+  token: "eyJhbGciOiJSUzI1.........YKWA8UfWzLsuwjfEPphPPlwa7SA"
+  quota: "quota-compute"
+- name: cluster2
+  enable: false
+  baseURL: "https://api.cluster2.orcunuso.io:6443"
+  token: "eyJhbGciOiJSIk94.........RWNRb21fRHMwQkxBhdXliT2NQWF"
+  quota: "quota-compute"
+sheets:
+  alerts: true
+  nodes: true
+  machines: true
+  namespaces: true
+  nsquotas: true
+  services: true
+  pvolumes: true
+
