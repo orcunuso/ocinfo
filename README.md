@@ -68,3 +68,12 @@ Finally, we need to get the token of our service account and add it into our YAM
 ```bash
 oc sa get-token ocinfo -n ocinfo
 ```
+
+## Known issues and roadmap
+
+This tool is still at early stages and there are many improvements on my mind from which I can list a few as;
+
+* Increase the variety of resources to extract (like routes, ingresses, deployments, daemonsets, etc)
+* Summary sheet is left blank intentionally. Future releases will have pivots and charts to summarize sheets.
+* OpenShift 4.6 support, especially with OVNKubernetes CNI.
+* Query default Prometheus instance, scrape data and provide usage metrics in proper sheets
