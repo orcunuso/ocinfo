@@ -8,13 +8,6 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-type resourceQuota struct {
-	cpuRequest string
-	cpuLimit   string
-	memRequest string
-	memLimit   string
-}
-
 func getEgressIP(body []byte, namespace string) string {
 	var returnValue string = "nil"
 	items := gjson.GetBytes(body, "items")
@@ -27,22 +20,6 @@ func getEgressIP(body []byte, namespace string) string {
 		return true
 	})
 	return returnValue
-}
-
-// This function can be deleted in the near future
-func getQuota(apiurl string, token string) resourceQuota {
-	body, _ := getRest(apiurl, token)
-	vars := gjson.GetManyBytes(body,
-		"spec.hard.requests\\.cpu",
-		"spec.hard.limits\\.cpu",
-		"spec.hard.requests\\.memory",
-		"spec.hard.limits\\.memory")
-	rq := resourceQuota{}
-	rq.cpuRequest = vars[0].String()
-	rq.cpuLimit = vars[1].String()
-	rq.memRequest = vars[2].String()
-	rq.memLimit = vars[3].String()
-	return rq
 }
 
 func getNsType(displayName string) string {
