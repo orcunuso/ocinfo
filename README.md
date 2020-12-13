@@ -12,7 +12,7 @@ cd $GOPATH/src/github.com/vorcunus/ocinfo
 make compile_all
 ```
 
-If you don't have an installed go environment, you can also download pre-compiled binaries from #TBD.
+If you don't have an installed go environment, you can also download compiled binaries from [releases](https://github.com/vOrcunus/ocinfo/releases) (coming soon).
 
 ## Preperation
 
@@ -47,13 +47,12 @@ sheets:
   namespaces: true
   nsquotas: true
   services: true
+  routes: true
   pvolumes: true
 ```
 
-I believe there are two items which are not self explanatory enough here, quota and sheets. 
-
 * The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.
-* The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item. 
+* The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item.
 
 ### Creating service accounts
 

@@ -16,5 +16,6 @@ sheets:
   namespaces: true
   nsquotas: true
   services: true
+  routes: true
   pvolumes: true
 
