@@ -75,9 +75,8 @@ func checkClusterAPI(apiurl string, token string) (bool, string) {
 	return true, "Success"
 }
 
-// This function "tries" to autofit the width of all columns in a sheet. Normally this is supposed to
-// be a more complicated algorithm as the width of all characters in all font types greatly differ so
-// this is the best it can get with minimal effort.
+// This function "tries" to autofit the width of all columns in a sheet. Normally this is supposed to be a more complicated algorithm
+// as the width of all characters in all font types greatly differ so this is the best it can get with minimal effort.
 func autoFit(f *excelize.File, sheet string) {
 	var maxChar int = 0
 	var colIndex int = 1
@@ -109,8 +108,7 @@ func getRightBottomCell(sheet string) string {
 	return c
 }
 
-// This function turns a range of cells into a nice, human-readable table format with filters, freeze panes
-// and different row styles.
+// This function turns a range of cells into a nice, human-readable table format with filters, freeze panes and different row styles.
 func formatTable(sheet string, colCount int) {
 	var i int = 1
 	var c1, c2 string
@@ -136,11 +134,23 @@ func formatTable(sheet string, colCount int) {
 		}
 		i++
 	}
+
+	xf.SetPanes(sheet, `{
+		"freeze": true, "split": false, "x_split": 2, "y_split": 1,
+		"top_left_cell": "C2", "active_pane": "bottomRight",
+		"panes": [
+		{
+			"sqref": "C2",
+			"active_cell": "C2",
+			"pane": "bottomLeft"
+		}]
+	}`)
+
 	autoFit(xf, sheet)
 }
 
-// Conditional formatting function that takes the column and a slice of strings as conditions to be formatted.
-// The values of the slice need to be in order of the color formats defined as red, yellow, green, blue and gray.
+// Conditional formatting function that takes the column and a slice of strings as conditions to be formatted. The values of the slice
+// need to be in order of the color formats defined as red, yellow, green, blue and gray.
 // Ex: conditionalFormat5("Sheet1", "E", []string{"critical", "warning", "info", "trivial", "none"})
 func conditionalFormat5(sheet, col string, values []string) {
 	var formats []int

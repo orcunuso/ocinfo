@@ -24,7 +24,7 @@ func getServices() {
 	var duration time.Duration
 	var xR int = 1
 	var sheetName string = "Services"
-	var apiurlSvc string
+	var apiurl string
 
 	// Initialize Excel sheet
 	index := xf.NewSheet(sheetName)
@@ -45,11 +45,11 @@ func getServices() {
 		}
 		info.Printf("%s: Working on %s\n", sheetName, cfg.Clusters[i].Name)
 
-		apiurlSvc = cfg.Clusters[i].BaseURL + "/api/v1/services?limit=1000"
-		rBody, _ := getRest(apiurlSvc, cfg.Clusters[i].Token)
+		apiurl = cfg.Clusters[i].BaseURL + "/api/v1/services?limit=1000"
+		body, _ := getRest(apiurl, cfg.Clusters[i].Token)
 
 		// Loop in list items and export data into Excel file
-		items := gjson.GetBytes(rBody, "items")
+		items := gjson.GetBytes(body, "items")
 		items.ForEach(func(key, value gjson.Result) bool {
 			vars := gjson.GetMany(value.String(),
 				`metadata.namespace`, `metadata.name`, `spec.type`, `spec.clusterIP`, `spec.externalIPs.0`,

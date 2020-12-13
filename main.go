@@ -38,6 +38,7 @@ type Configuration struct {
 		Machines   bool `yaml:"machines"`
 		Nsquotas   bool `yaml:"nsquotas"`
 		Services   bool `yaml:"services"`
+		Routes     bool `yaml:"routes"`
 		Pvolumes   bool `yaml:"pvolumes"`
 	} `yaml:"sheets"`
 }
@@ -114,6 +115,9 @@ func main() {
 	}
 	if cfg.Sheets.Services {
 		getServices()
+	}
+	if cfg.Sheets.Routes {
+		getRoutes()
 	}
 	//sheetSummary()
 
