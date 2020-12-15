@@ -25,11 +25,12 @@ var (
 // Configuration struct to keep OCinfo properties extracted from YAML configuration file.
 type Configuration struct {
 	Clusters []struct {
-		Name    string `yaml:"name"`
-		Enable  bool   `yaml:"enable"`
-		BaseURL string `yaml:"baseURL"`
-		Token   string `yaml:"token"`
-		Quota   string `yaml:"quota"`
+		Name      string `yaml:"name"`
+		Enable    bool   `yaml:"enable"`
+		BaseURL   string `yaml:"baseURL"`
+		Token     string `yaml:"token"`
+		PromToken string `yaml:"promToken,omitempty"`
+		Quota     string `yaml:"quota"`
 	} `yaml:"clusters"`
 	Sheets struct {
 		Alerts     bool `yaml:"alerts"`

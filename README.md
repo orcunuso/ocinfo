@@ -2,6 +2,8 @@
 
 OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple OpenShift clusters and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
 
+OCinfo runs best with OpenShift 4.4 and 4.5, support for new features of OpenShift 4.6 like OVNKubernetes is on the roadmap. 
+
 ## Installation
 
 If you have an installed go environment, you can get source code and compile.
@@ -79,11 +81,23 @@ Once you have fulfilled the requirements, you can get the result spreadsheet doc
 
 ![OCinfo Screenshot](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo-sshot1.png?raw=true)
 
+### Gotchas
+
+* In NSQuotas sheet, only the namespaces with quotas are listed in the sheet in order to make it possible to compare quota definitions with active usage. The units used for the cpu and memory metrics are millicores and mebibytes respectively. 
+
 ## Known issues and roadmap
 
 This tool is still at early stages and there are many improvements on my mind from which I can list a few as;
 
-* Increase the variety of resources to extract (like routes, ingresses, deployments, daemonsets, etc)
+* Increase the variety of resources to extract (like ingresses, deployments, daemonsets, etc)
 * Summary sheet is left blank intentionally. Future releases will have pivots and charts to summarize sheets.
 * OpenShift 4.6 support, especially with OVNKubernetes CNI.
-* Query default Prometheus instance, scrape data and provide usage metrics in proper sheets
+* Query default Prometheus instance, scrape more data and provide metrics in proper sheets
+
+## Contribution
+
+Any contribution or suggestion that would help this tool more useful and efficient are welcome!
+
+## Contact
+
+Ozan Orçunus [@orcunuso](https://twitter.com/orcunuso)

@@ -58,10 +58,11 @@ func getAlerts() {
 		r := gjson.GetBytes(body, `data.token`)
 		tb, _ := b64.StdEncoding.DecodeString(r.String())
 		token = string(tb)
+		cfg.Clusters[i].PromToken = token
 
 		// Get alerts from Prometheus with the token
 		apiurl = "https://alertmanager-main-openshift-monitoring.apps." + strings.TrimLeft(strings.Split(cfg.Clusters[i].BaseURL, ":")[1], "//api.") + "/api/v1/alerts"
-		body, _ = getRest(apiurl, token)
+		body, _ = getRest(apiurl, cfg.Clusters[i].PromToken)
 
 		// Loop in alerts data and export data into Excel file
 		items = gjson.GetBytes(body, "data")
