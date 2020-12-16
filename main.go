@@ -42,6 +42,7 @@ type Configuration struct {
 		Services   bool `yaml:"services"`
 		Routes     bool `yaml:"routes"`
 		Pvolumes   bool `yaml:"pvolumes"`
+		Daemonsets bool `yaml:"daemonsets"`
 	} `yaml:"sheets"`
 }
 
@@ -114,6 +115,9 @@ func main() {
 	}
 	if cfg.Sheets.Pvolumes {
 		getPVolumes()
+	}
+	if cfg.Sheets.Daemonsets {
+		getDaemonsets()
 	}
 	if cfg.Sheets.Services {
 		getServices()

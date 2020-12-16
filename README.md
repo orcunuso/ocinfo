@@ -49,6 +49,7 @@ sheets:
   machines: true
   namespaces: true
   nsquotas: true
+  daemonsets: true
   services: true
   routes: true
   pvolumes: true

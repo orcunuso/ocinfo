@@ -17,6 +17,7 @@ sheets:
   namespaces: true
   nsquotas: true
   services: true
+  daemonsets: true
   routes: true
   pvolumes: true
 
