@@ -42,6 +42,7 @@ clusters:
   baseURL: "https://api.cluster2.orcunuso.io:6443"
   token: "eyJhbGciOiJSIk94.........RWNRb21fRHMwQkxBhdXliT2NQWF"
   quota: "quota-compute"
+appnslabel: "nslabel"
 sheets:
   alerts: true
   nodes: true
@@ -54,6 +55,7 @@ sheets:
 ```
 
 * The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.
+* It makes sense to differentiate the namespaces for reporting purposes, like application and system namespaces. Easy way to achieve that is to label all application namespaces with a specific label and let OCinfo query that label and decide according to its existance. Appnslabel serves that purpose.
 * The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item.
 
 ### Creating service accounts

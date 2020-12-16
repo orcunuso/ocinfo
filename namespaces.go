@@ -83,35 +83,41 @@ func getNamespaces() {
 		items := gjson.GetBytes(body, "items")
 		items.ForEach(func(key, value gjson.Result) bool {
 			vars := gjson.GetMany(value.String(),
-				`metadata.name`, `metadata.annotations.openshift\.io/display-name`, `metadata.annotations.openshift\.io/description`, `metadata.annotations.openshift\.io/requester`,
-				`metadata.annotations.openshift\.io/node-selector`, `metadata.annotations.openshift\.io/sa\.scc\.mcs`, `metadata.annotations.openshift\.io/sa\.scc\.uid-range`,
-				`metadata.labels.tcrequestid`, `metadata.labels.tcserviceid`, `metadata.creationTimestamp`, `metadata.resourceVersion`, `metadata.uid`)
+				`metadata.name`, `metadata.annotations.openshift\.io/display-name`, `metadata.annotations.openshift\.io/description`,
+				`metadata.annotations.openshift\.io/requester`, `metadata.annotations.openshift\.io/node-selector`,
+				`metadata.annotations.openshift\.io/sa\.scc\.mcs`, `metadata.annotations.openshift\.io/sa\.scc\.uid-range`,
+				`metadata.labels.tcrequestid`, `metadata.labels.tcserviceid`, `metadata.labels.`+cfg.Appnslabel,
+				`metadata.creationTimestamp`, `metadata.resourceVersion`, `metadata.uid`)
 
 			ns := vars[0].String()
 			pt, pr := getPodCount(apiurl+"/"+ns+"/pods", cfg.Clusters[i].Token)
 
 			csvData = nil
-			csvData = append(csvData, cfg.Clusters[i].Name)        // Cluster Name
-			csvData = append(csvData, ns)                          // Namespace Name
-			csvData = append(csvData, getNsType(vars[1].String())) // Namespace Type
-			csvData = append(csvData, vars[1].String())            // Namespace Display Name
-			csvData = append(csvData, vars[2].String())            // Namespace Description
-			csvData = append(csvData, vars[3].String())            // Namespace Requester
-			csvData = append(csvData, vars[4].String())            // Namespace NodeSelector
-			csvData = append(csvData, vars[5].String())            // Namespace SCC.MCS
-			csvData = append(csvData, vars[6].String())            // Namespace SCC.UID-Range
-			csvData = append(csvData, vars[7].String())            // Company Specific Label: RequestID
-			csvData = append(csvData, vars[8].String())            // Company Specific Label: ServiceID
-			if statusNet == 404 {                                  // This probably means that OpenShiftSDN is not implemented
+			csvData = append(csvData, cfg.Clusters[i].Name) // Cluster Name
+			csvData = append(csvData, ns)                   // Namespace Name
+			if vars[9].String() != "" {                     // Namespace Type
+				csvData = append(csvData, "application")
+			} else {
+				csvData = append(csvData, "system")
+			}
+			csvData = append(csvData, vars[1].String()) // Namespace Display Name
+			csvData = append(csvData, vars[2].String()) // Namespace Description
+			csvData = append(csvData, vars[3].String()) // Namespace Requester
+			csvData = append(csvData, vars[4].String()) // Namespace NodeSelector
+			csvData = append(csvData, vars[5].String()) // Namespace SCC.MCS
+			csvData = append(csvData, vars[6].String()) // Namespace SCC.UID-Range
+			csvData = append(csvData, vars[7].String()) // Company Specific Label: RequestID
+			csvData = append(csvData, vars[8].String()) // Company Specific Label: ServiceID
+			if statusNet == 404 {                       // This probably means that OpenShiftSDN is not implemented
 				csvData = append(csvData, "NotImplemented")
 			} else {
 				csvData = append(csvData, getEgressIP(bodyNet, ns))
 			}
 			csvData = append(csvData, pt)                // Total Pod Count
 			csvData = append(csvData, pr)                // Running Pod Count
-			csvData = append(csvData, vars[9].String())  // Creation Timestamp
-			csvData = append(csvData, vars[10].String()) // Resource Version
-			csvData = append(csvData, vars[11].String()) // UID
+			csvData = append(csvData, vars[10].String()) // Creation Timestamp
+			csvData = append(csvData, vars[11].String()) // Resource Version
+			csvData = append(csvData, vars[12].String()) // UID
 
 			xR++
 			cell, _ := excelize.CoordinatesToCellName(1, xR)

@@ -32,7 +32,8 @@ type Configuration struct {
 		PromToken string `yaml:"promToken,omitempty"`
 		Quota     string `yaml:"quota"`
 	} `yaml:"clusters"`
-	Sheets struct {
+	Appnslabel string `yaml:"appnslabel"`
+	Sheets     struct {
 		Alerts     bool `yaml:"alerts"`
 		Namespaces bool `yaml:"namespaces"`
 		Nodes      bool `yaml:"nodes"`
