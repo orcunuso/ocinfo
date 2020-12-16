@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -20,13 +19,6 @@ func getEgressIP(body []byte, namespace string) string {
 		return true
 	})
 	return returnValue
-}
-
-func getNsType(displayName string) string {
-	if strings.HasPrefix(displayName, "TURKCELL") {
-		return "application"
-	}
-	return "system"
 }
 
 func getPodCount(apiurl string, token string) (int, int) {
