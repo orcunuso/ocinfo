@@ -24,7 +24,7 @@ func getNodeStatus(status string) string {
 
 func getNodes() {
 
-	var csvHeader = []string{"Cluster", "Name", "Role", "Status", "IP", "PodCIDR", "CPU", "MEM", "KubeletVer", "MachineName", "CreationTime", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Name", "Role", "Status", "IP", "PodCIDR", "CPU", "MEM", "KubeletVer", "MachineName", "CreationDate", "Version", "UID"}
 	var csvData []string
 	var startTime time.Time
 	var duration time.Duration
@@ -73,7 +73,7 @@ func getNodes() {
 			csvData = append(csvData, vars[6].String())                        // Node MEM
 			csvData = append(csvData, vars[7].String())                        // Kubelet Version
 			csvData = append(csvData, strings.Split(vars[8].String(), "/")[1]) // Machine Name
-			csvData = append(csvData, vars[9].String())                        // Creation Timestamp
+			csvData = append(csvData, formatDate(vars[9].String()))            // Creation Timestamp
 			csvData = append(csvData, vars[10].String())                       // Resource Version
 			csvData = append(csvData, vars[11].String())                       // UID
 

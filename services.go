@@ -18,7 +18,7 @@ func getSvcPorts(result gjson.Result) string {
 }
 
 func getServices() {
-	var csvHeader = []string{"Cluster", "Namespace", "Name", "Type", "ClusterIP", "ExternalIP", "Ports", "Affinity", "CreationTime", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Namespace", "Name", "Type", "ClusterIP", "ExternalIP", "Ports", "Affinity", "CreationDate", "Version", "UID"}
 	var csvData []string
 	var startTime time.Time
 	var duration time.Duration
@@ -56,17 +56,17 @@ func getServices() {
 				`spec.ports`, `spec.sessionAffinity`, `metadata.creationTimestamp`, `metadata.resourceVersion`, `metadata.uid`)
 
 			csvData = nil
-			csvData = append(csvData, cfg.Clusters[i].Name) // Cluster Name
-			csvData = append(csvData, vars[0].String())     // Namespace Name
-			csvData = append(csvData, vars[1].String())     // Service Name
-			csvData = append(csvData, vars[2].String())     // Type
-			csvData = append(csvData, vars[3].String())     // ClusterIP
-			csvData = append(csvData, vars[4].String())     // ExternalIP
-			csvData = append(csvData, getSvcPorts(vars[5])) // Ports
-			csvData = append(csvData, vars[6].String())     // Session Affinity
-			csvData = append(csvData, vars[7].String())     // Creation Timestamp
-			csvData = append(csvData, vars[8].String())     // Resource Version
-			csvData = append(csvData, vars[9].String())     // UID
+			csvData = append(csvData, cfg.Clusters[i].Name)         // Cluster Name
+			csvData = append(csvData, vars[0].String())             // Namespace Name
+			csvData = append(csvData, vars[1].String())             // Service Name
+			csvData = append(csvData, vars[2].String())             // Type
+			csvData = append(csvData, vars[3].String())             // ClusterIP
+			csvData = append(csvData, vars[4].String())             // ExternalIP
+			csvData = append(csvData, getSvcPorts(vars[5]))         // Ports
+			csvData = append(csvData, vars[6].String())             // Session Affinity
+			csvData = append(csvData, formatDate(vars[7].String())) // Creation Timestamp
+			csvData = append(csvData, vars[8].String())             // Resource Version
+			csvData = append(csvData, vars[9].String())             // UID
 
 			xR++
 			cell, _ := excelize.CoordinatesToCellName(1, xR)

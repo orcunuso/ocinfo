@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
@@ -56,6 +57,14 @@ func getRest(url string, token string) ([]byte, int) {
 	return body, response.StatusCode
 }
 
+func formatDate(d string) string {
+	t, err := time.Parse(time.RFC3339, d)
+	if err != nil {
+		erro.Println(err)
+	}
+	return t.Format("2006.01.02")
+}
+
 // This function checks if OpenShift API is accessable.
 func checkClusterAPI(apiurl string, token string) (bool, string) {
 	request, err := http.NewRequest("GET", apiurl+"/api/v1", nil)
@@ -76,27 +85,37 @@ func checkClusterAPI(apiurl string, token string) (bool, string) {
 }
 
 // This function "tries" to autofit the width of all columns in a sheet. Normally this is supposed to be a more complicated algorithm
-// as the width of all characters in all font types greatly differ so this is the best it can get with minimal effort.
+// as the width of all characters in all font types greatly differ so this is the best it can get with minimal effort (especially with
+// monospaced fonts like Consolas)
 func autoFit(f *excelize.File, sheet string) {
-	var maxChar int = 0
-	var colIndex int = 1
+	var max int = 0
+	var ilk int = 0
+	var i int = 1
 	cols, _ := f.Cols(sheet)
 
 	for cols.Next() {
-		maxChar = 0
+		max = 0
 		rows, _ := cols.Rows()
-		for _, rowCell := range rows {
-			if len(rowCell) > maxChar {
-				maxChar = len(rowCell)
-				if maxChar > 100 {
-					maxChar = 100
+		for x, c := range rows {
+			if x == 0 {
+				ilk = len(c)
+			}
+			if len(c) > max {
+				max = len(c)
+				if max > 66 {
+					max = 66
 					break
 				}
 			}
 		}
-		colName, _ := excelize.ColumnNumberToName(colIndex)
-		f.SetColWidth(sheet, colName, colName, float64(maxChar))
-		colIndex++
+		cn, _ := excelize.ColumnNumberToName(i)
+
+		if ilk == max {
+			f.SetColWidth(sheet, cn, cn, float64(max)+3)
+		} else {
+			f.SetColWidth(sheet, cn, cn, float64(max)+1)
+		}
+		i++
 	}
 }
 

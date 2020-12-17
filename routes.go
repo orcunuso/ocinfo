@@ -9,7 +9,7 @@ import (
 
 func getRoutes() {
 	var csvHeader = []string{"Cluster", "Namespace", "Name", "Hostname", "Path", "Target", "TargetPort", "WildcardPolicy", "TLS.Termination",
-		"TLS.EdgeTermination", "CreationTime", "Version", "UID"}
+		"TLS.EdgeTermination", "CreationDate", "Version", "UID"}
 	var csvData []string
 	var startTime time.Time
 	var duration time.Duration
@@ -58,7 +58,7 @@ func getRoutes() {
 			csvData = append(csvData, vars[8].String())                                               // Wildcard Policy
 			csvData = append(csvData, vars[9].String())                                               // TLS Termination
 			csvData = append(csvData, vars[10].String())                                              // TLS Insecure Edge Termination Policy
-			csvData = append(csvData, vars[11].String())                                              // Creation Timestamp
+			csvData = append(csvData, formatDate(vars[11].String()))                                  // Creation Timestamp
 			csvData = append(csvData, vars[12].String())                                              // Resource Version
 			csvData = append(csvData, vars[13].String())                                              // UID
 

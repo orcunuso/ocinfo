@@ -22,7 +22,7 @@ func getAccessModes(result gjson.Result) string {
 }
 
 func getPVolumes() {
-	var csvHeader = []string{"Cluster", "Name", "Status", "Capacity", "AccessModes", "ReclaimPolicy", "ClaimedBy", "CreationTime", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Name", "Status", "Capacity", "AccessModes", "ReclaimPolicy", "ClaimedBy", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -67,7 +67,7 @@ func getPVolumes() {
 			csvData = append(csvData, getAccessModes(vars[3]))               // Access Modes
 			csvData = append(csvData, vars[4].String())                      // Reclaim Policy
 			csvData = append(csvData, vars[5].String()+"/"+vars[6].String()) // Claimed By
-			csvData = append(csvData, vars[7].String())                      // Creation Timestamp
+			csvData = append(csvData, formatDate(vars[7].String()))          // Creation Timestamp
 			csvData = append(csvData, vars[8].String())                      // Resource Version
 			csvData = append(csvData, vars[9].String())                      // UID
 

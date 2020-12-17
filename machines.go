@@ -21,7 +21,7 @@ func calculateMemoryGB(memory string) int {
 
 func getMachines() {
 
-	var csvHeader = []string{"Cluster", "Name", "Phase", "InstanceState", "NodeRef", "VmID", "ProviderID", "CPUCores", "RAMGB", "OSDisk", "CreationTime", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Name", "Phase", "InstanceState", "NodeRef", "VmID", "ProviderID", "CPUCores", "RAMGB", "OSDisk", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -70,7 +70,7 @@ func getMachines() {
 			csvData = append(csvData, calculateCPUCores(vars[6].String(), vars[7].String())) // CPU Cores
 			csvData = append(csvData, calculateMemoryGB(vars[8].String()))                   // Memory
 			csvData = append(csvData, vars[9].String())                                      // OS Disk Size
-			csvData = append(csvData, vars[10].String())                                     // Creation Timestamp
+			csvData = append(csvData, formatDate(vars[10].String()))                         // Creation Timestamp
 			csvData = append(csvData, vars[11].String())                                     // Resource Version
 			csvData = append(csvData, vars[12].String())                                     // UID
 

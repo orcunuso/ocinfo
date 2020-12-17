@@ -39,7 +39,7 @@ func getPodCount(apiurl string, token string) (int, int) {
 func getNamespaces() {
 
 	var csvHeader = []string{"Cluster", "Name", "Type", "DisplayName", "Description", "Requester", "NodeSelector", "SCC.MCS", "SCC.UIDRange", "RequestID", "ServiceID",
-		"EgressIP", "TotalPods", "RunningPods", "CreationTime", "Version", "UID"}
+		"EgressIP", "TotalPods", "RunningPods", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -105,11 +105,11 @@ func getNamespaces() {
 			} else {
 				csvData = append(csvData, getEgressIP(bodyNet, ns))
 			}
-			csvData = append(csvData, pt)                // Total Pod Count
-			csvData = append(csvData, pr)                // Running Pod Count
-			csvData = append(csvData, vars[10].String()) // Creation Timestamp
-			csvData = append(csvData, vars[11].String()) // Resource Version
-			csvData = append(csvData, vars[12].String()) // UID
+			csvData = append(csvData, pt)                            // Total Pod Count
+			csvData = append(csvData, pr)                            // Running Pod Count
+			csvData = append(csvData, formatDate(vars[10].String())) // Creation Timestamp
+			csvData = append(csvData, vars[11].String())             // Resource Version
+			csvData = append(csvData, vars[12].String())             // UID
 
 			xR++
 			cell, _ := excelize.CoordinatesToCellName(1, xR)

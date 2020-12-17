@@ -80,6 +80,12 @@ oc sa get-token ocinfo -n ocinfo
 
 ## Sample Execution
 
+```
+Usage of ocinfo:
+  -f <string>   Sets YAML file to configure OCinfo (default "ocinfo.yaml")
+  -v            Prints version
+```
+
 Once you have fulfilled the requirements, you can get the result spreadsheet document by just running the binary. Below is a screenshot on what the resulting file would look like:
 
 ![OCinfo Screenshot](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo-sshot1.png?raw=true)
