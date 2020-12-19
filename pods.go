@@ -93,5 +93,5 @@ func getPods() {
 	formatTable(sheetName, len(csvHeader))
 
 	duration = time.Since(startTime)
-	info.Printf("%s: Section ended in %s\n", sheetName, duration) // POD TAMAM GENEL TEST KALDI
+	info.Printf("%s: Section ended in %s\n", sheetName, duration)
 }

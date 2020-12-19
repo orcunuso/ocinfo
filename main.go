@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const version string = "v1.0.0"
+const version string = "v0.1.1"
 
 var currentTime time.Time = time.Now()
 
@@ -68,7 +68,7 @@ func init() {
 	perror(err)
 
 	xsh0, _ = xf.NewStyle(`{
-		"font": {"family": "Consolas", "size": 10, "color": "#FFFFFF", "bold": true},
+		"font": {"family": "Consolas", "size": 8, "color": "#FFFFFF", "bold": true},
 		"border": [
 			{"type": "left", "color": "000000", "style": 1}, 
 			{"type": "right", "color": "000000", "style": 1}, 
@@ -76,7 +76,7 @@ func init() {
 			{"type": "bottom", "color": "000000", "style": 1}],
 		"fill": {"type": "pattern","color": ["#000000"],"pattern": 1}}`)
 	xsr1, _ = xf.NewStyle(`{
-		"font": {"family": "Consolas", "size": 10, "color": "#000000", "bold": false},
+		"font": {"family": "Consolas", "size": 8, "color": "#000000", "bold": false},
 		"border": [
 			{"type": "left", "color": "000000", "style": 1}, 
 			{"type": "right", "color": "000000", "style": 1}, 
@@ -84,7 +84,7 @@ func init() {
 			{"type": "bottom", "color": "000000", "style": 1}],
 		"fill": {"type": "pattern","color": ["#DCDCDC"],"pattern": 1}}`)
 	xsr2, _ = xf.NewStyle(`{
-		"font": {"family": "Consolas", "size": 10, "color": "#000000", "bold": false},
+		"font": {"family": "Consolas", "size": 8, "color": "#000000", "bold": false},
 		"border": [
 			{"type": "left", "color": "000000", "style": 1}, 
 			{"type": "right", "color": "000000", "style": 1}, 
@@ -130,6 +130,7 @@ func main() {
 		getPods()
 	}
 
+	xf.SetActiveSheet(xf.GetSheetIndex("Clusters"))
 	//sheetSummary()
 
 	// Save excel file and quit

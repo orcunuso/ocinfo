@@ -84,14 +84,15 @@ func checkClusterAPI(apiurl string, token string) (bool, string) {
 	return true, "Success"
 }
 
-// This function "tries" to autofit the width of all columns in a sheet. Normally this is supposed to be a more complicated algorithm
+// This function autofits the width of all columns in a sheet. Normally this is supposed to be a more complicated algorithm
 // as the width of all characters in all font types greatly differ so this is the best it can get with minimal effort (especially with
 // monospaced fonts like Consolas)
 func autoFit(f *excelize.File, sheet string) {
 	var max int = 0
 	var ilk int = 0
-	var i int = 1
+	var i, j int = 1, 1
 	cols, _ := f.Cols(sheet)
+	rows, _ := f.Rows(sheet)
 
 	for cols.Next() {
 		max = 0
@@ -102,8 +103,8 @@ func autoFit(f *excelize.File, sheet string) {
 			}
 			if len(c) > max {
 				max = len(c)
-				if max > 66 {
-					max = 66
+				if max > 80 {
+					max = 80
 					break
 				}
 			}
@@ -111,11 +112,16 @@ func autoFit(f *excelize.File, sheet string) {
 		cn, _ := excelize.ColumnNumberToName(i)
 
 		if ilk == max {
-			f.SetColWidth(sheet, cn, cn, float64(max)+3)
+			f.SetColWidth(sheet, cn, cn, (float64(max)*0.9)+3)
 		} else {
-			f.SetColWidth(sheet, cn, cn, float64(max)+1)
+			f.SetColWidth(sheet, cn, cn, (float64(max)*0.9)+1)
 		}
 		i++
+	}
+
+	for rows.Next() {
+		f.SetRowHeight(sheet, j, 13)
+		j++
 	}
 }
 
@@ -173,12 +179,12 @@ func formatTable(sheet string, colCount int) {
 // Ex: conditionalFormat5("Sheet1", "E", []string{"critical", "warning", "info", "trivial", "none"})
 func conditionalFormat5(sheet, col string, values []string) {
 	var formats []int
-	format1, _ := xf.NewConditionalStyle(`{"font":{"color": "#9A0511", "size": 10},"fill":{"type": "pattern","color": ["#FEC7CE"],"pattern": 1}}`) // Light red
-	format2, _ := xf.NewConditionalStyle(`{"font":{"color": "#9B5713", "size": 10},"fill":{"type": "pattern","color": ["#FEEAA0"],"pattern": 1}}`) // Light yellow
-	format3, _ := xf.NewConditionalStyle(`{"font":{"color": "#09600B", "size": 10},"fill":{"type": "pattern","color": ["#C7EECF"],"pattern": 1}}`) // Light green
-	format4, _ := xf.NewConditionalStyle(`{"font":{"color": "#0033CC", "size": 10},"fill":{"type": "pattern","color": ["#99CCFF"],"pattern": 1}}`) // Light blue
-	format5, _ := xf.NewConditionalStyle(`{"font":{"color": "#454545", "size": 10},"fill":{"type": "pattern","color": ["#E6E6E7"],"pattern": 1}}`) // Light gray
-	formats = append(formats, format1, format2, format3, format4, format5)
+	f1, _ := xf.NewConditionalStyle(`{"font":{"color": "#9A0511", "size": 10},"fill":{"type": "pattern","color": ["#FEC7CE"],"pattern": 1}}`) // Red
+	f2, _ := xf.NewConditionalStyle(`{"font":{"color": "#9B5713", "size": 10},"fill":{"type": "pattern","color": ["#FEEAA0"],"pattern": 1}}`) // Yellow
+	f3, _ := xf.NewConditionalStyle(`{"font":{"color": "#09600B", "size": 10},"fill":{"type": "pattern","color": ["#C7EECF"],"pattern": 1}}`) // Green
+	f4, _ := xf.NewConditionalStyle(`{"font":{"color": "#0033CC", "size": 10},"fill":{"type": "pattern","color": ["#99CCFF"],"pattern": 1}}`) // Blue
+	f5, _ := xf.NewConditionalStyle(`{"font":{"color": "#454545", "size": 10},"fill":{"type": "pattern","color": ["#E6E6E7"],"pattern": 1}}`) // Gray
+	formats = append(formats, f1, f2, f3, f4, f5)
 
 	rows, _ := xf.GetRows(sheet)
 	cells := col + "1:" + col + fmt.Sprint(len(rows))

@@ -14,7 +14,7 @@ cd $GOPATH/src/github.com/vorcunus/ocinfo
 make compile_all
 ```
 
-If you don't have an installed go environment, you can also download compiled binaries from [releases](https://github.com/vOrcunus/ocinfo/releases) (coming soon).
+If you don't have an installed go environment, you can also download compiled binaries from [releases](https://github.com/vOrcunus/ocinfo/releases).
 
 ## Preperation
 
