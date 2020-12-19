@@ -20,4 +20,5 @@ sheets:
   daemonsets: true
   routes: true
   pvolumes: true
+  pods: true
 

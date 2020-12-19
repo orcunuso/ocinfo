@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -30,12 +31,13 @@ func convert2Milicores(value string) int {
 }
 
 func convert2Mebibytes(value string) float64 {
-	if i, err := strconv.ParseFloat(value, 64); err == nil {
-		if i == 0 {
-			return 0
-		}
+	if value == "" {
+		return 0
+	}
+	if i, err := strconv.ParseFloat(value, 64); err == nil { // Check if value includes any runes
 		return math.Round(((i / math.Pow(1049, 2)) * 100) / 100)
 	}
+
 	if strings.Contains(value, "Gi") {
 		intValue, _ := strconv.ParseFloat(strings.TrimSuffix(value, "Gi"), 64)
 		return intValue * math.Pow(1024, 1)
@@ -86,11 +88,15 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 		q.Set("query", "sum(rate(container_cpu_usage_seconds_total{image!=\"\"}["+tr+"])) by (namespace)")
 		u.RawQuery = q.Encode()
 
-		body, _ := getRest(u.String(), token)
-		if (gjson.GetBytes(body, "status")).String() != "success" {
-			erro.Printf("Prometheus query failed")
-			info.Printf(string(body))
+		body, code := getRest(u.String(), token)
+		if code >= 400 {
+			erro.Printf("Prometheus query failed: %s", http.StatusText(code))
 			break
+		} else {
+			if (gjson.GetBytes(body, "status")).String() != "success" {
+				erro.Printf("Prometheus query failed for unknown reason")
+				break
+			}
 		}
 
 		items := gjson.GetBytes(body, "data.result")
@@ -110,14 +116,18 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 			return true
 		})
 		// Query Memory usage
-		q.Set("query", "max_over_time(sum(container_memory_working_set_bytes{image!=\"\"} / 1024^3) by (namespace)["+tr+":])")
+		q.Set("query", "max_over_time(sum(container_memory_working_set_bytes{image!=\"\"} / 1024^2) by (namespace)["+tr+":])")
 		u.RawQuery = q.Encode()
 
-		body, _ = getRest(u.String(), token)
-		if (gjson.GetBytes(body, "status")).String() != "success" {
-			erro.Printf("Prometheus query failed")
-			info.Printf(string(body))
+		body, code = getRest(u.String(), token)
+		if code >= 400 {
+			erro.Printf("Prometheus query failed: %s", http.StatusText(code))
 			break
+		} else {
+			if (gjson.GetBytes(body, "status")).String() != "success" {
+				erro.Printf("Prometheus query failed for unknown reason")
+				break
+			}
 		}
 
 		items = gjson.GetBytes(body, "data.result")
@@ -144,7 +154,7 @@ func getNamespaceQuotas() {
 
 	var csvHeader = []string{"Cluster", "Namespace", "Hard.CPUReq", "Hard.CPULim", "Hard.MEMReq", "Hard.MEMLim", "Used.CPUReq", "Used.CPULim",
 		"Used.MEMReq", "Used.MEMLim", "Real.CPU.5m", "Real.CPU.1h", "Real.CPU.6h", "Real.CPU.24h", "Real.MEM.5m", "Real.MEM.1h",
-		"Real.MEM.6h", "Real.MEM.24h", "CreationTime", "Version", "UID"}
+		"Real.MEM.6h", "Real.MEM.24h", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -172,11 +182,15 @@ func getNamespaceQuotas() {
 		info.Printf("%s: Working on %s\n", sheetName, cfg.Clusters[i].Name)
 
 		var cms clusterMetric
-		cms.prometrics = make(map[string]prometric)
-		cms.queryPrometheus(cfg.Clusters[i].BaseURL, cfg.Clusters[i].PromToken)
-		//for k, v := range cms.prometrics {
-		//	fmt.Println(k, "value is", v)
-		//}
+		if cfg.Clusters[i].PromToken == "" {
+			warn.Printf("Alerts sheet is not enabled. To get Prometheus metrics, please enable Alerts in %s", ff)
+		} else {
+			cms.prometrics = make(map[string]prometric)
+			cms.queryPrometheus(cfg.Clusters[i].BaseURL, cfg.Clusters[i].PromToken)
+			//for k, v := range cms.prometrics {
+			//	fmt.Println(k, "value is", v)
+			//}
+		}
 
 		apiurl = cfg.Clusters[i].BaseURL + "/api/v1/resourcequotas?limit=1000"
 		body, _ := getRest(apiurl, cfg.Clusters[i].Token)
@@ -214,9 +228,9 @@ func getNamespaceQuotas() {
 			} else {
 				csvData = append(csvData, 0, 0, 0, 0, 0, 0, 0, 0)
 			}
-			csvData = append(csvData, vars[10].String()) // Creation Timestamp
-			csvData = append(csvData, vars[11].String()) // Resource Version
-			csvData = append(csvData, vars[12].String()) // UID
+			csvData = append(csvData, formatDate(vars[10].String())) // Creation Timestamp
+			csvData = append(csvData, vars[11].String())             // Resource Version
+			csvData = append(csvData, vars[12].String())             // UID
 
 			xR++
 			cell, _ := excelize.CoordinatesToCellName(1, xR)

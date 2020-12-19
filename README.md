@@ -53,6 +53,7 @@ sheets:
   services: true
   routes: true
   pvolumes: true
+  pods: true
 ```
 
 * The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.
@@ -92,7 +93,8 @@ Once you have fulfilled the requirements, you can get the result spreadsheet doc
 
 ### Gotchas
 
-* In NSQuotas sheet, only the namespaces with quotas are listed in the sheet in order to make it possible to compare quota definitions with active usage. The units used for the cpu and memory metrics are millicores and mebibytes respectively. 
+* In NSQuotas sheet, only the namespaces with quotas are listed in the sheet in order to make it possible to compare quota definitions with active usage. The units used for the cpu and memory metrics are millicores and mebibytes respectively.
+* Only running pods are listed in Pods sheet.
 
 ## Known issues and roadmap
 

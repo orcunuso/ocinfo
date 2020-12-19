@@ -43,6 +43,7 @@ type Configuration struct {
 		Routes     bool `yaml:"routes"`
 		Pvolumes   bool `yaml:"pvolumes"`
 		Daemonsets bool `yaml:"daemonsets"`
+		Pods       bool `yaml:"pods"`
 	} `yaml:"sheets"`
 }
 
@@ -119,12 +120,16 @@ func main() {
 	if cfg.Sheets.Daemonsets {
 		getDaemonsets()
 	}
-	if cfg.Sheets.Services {
-		getServices()
-	}
 	if cfg.Sheets.Routes {
 		getRoutes()
 	}
+	if cfg.Sheets.Services {
+		getServices()
+	}
+	if cfg.Sheets.Pods {
+		getPods()
+	}
+
 	//sheetSummary()
 
 	// Save excel file and quit
