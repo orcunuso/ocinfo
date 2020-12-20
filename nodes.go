@@ -22,7 +22,7 @@ func getNodeStatus(status string) string {
 	return "NotReady"
 }
 
-func getNodes() {
+func createNodeSheet() {
 
 	var csvHeader = []string{"Cluster", "Name", "Role", "Status", "IP", "PodCIDR", "CPU", "MEM", "KubeletVer", "MachineName", "CreationDate", "Version", "UID"}
 	var csvData []string

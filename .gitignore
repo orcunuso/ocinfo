@@ -2,6 +2,7 @@
 bin/
 
 # General Purpose
+.DS_Store*
 *.crt
 *.key
 *.log

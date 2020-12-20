@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const version string = "v0.1.1"
+const version string = "v0.1.2"
 
 var currentTime time.Time = time.Now()
 
@@ -34,16 +34,17 @@ type Configuration struct {
 	} `yaml:"clusters"`
 	Appnslabel string `yaml:"appnslabel"`
 	Sheets     struct {
-		Alerts     bool `yaml:"alerts"`
-		Namespaces bool `yaml:"namespaces"`
-		Nodes      bool `yaml:"nodes"`
-		Machines   bool `yaml:"machines"`
-		Nsquotas   bool `yaml:"nsquotas"`
-		Services   bool `yaml:"services"`
-		Routes     bool `yaml:"routes"`
-		Pvolumes   bool `yaml:"pvolumes"`
-		Daemonsets bool `yaml:"daemonsets"`
-		Pods       bool `yaml:"pods"`
+		Alerts      bool `yaml:"alerts"`
+		Namespaces  bool `yaml:"namespaces"`
+		Nodes       bool `yaml:"nodes"`
+		Machines    bool `yaml:"machines"`
+		Nsquotas    bool `yaml:"nsquotas"`
+		Services    bool `yaml:"services"`
+		Routes      bool `yaml:"routes"`
+		Pvolumes    bool `yaml:"pvolumes"`
+		Daemonsets  bool `yaml:"daemonsets"`
+		Pods        bool `yaml:"pods"`
+		Deployments bool `yaml:"deployments"`
 	} `yaml:"sheets"`
 }
 
@@ -98,44 +99,52 @@ func main() {
 	// Create excel sheets seperated for each resource types
 	info.Printf("OCinfo started with version %s", version)
 
-	getClusters()
+	createClusterSheet()
 	if cfg.Sheets.Alerts {
-		getAlerts()
+		createAlertSheet()
 	}
 	if cfg.Sheets.Nodes {
-		getNodes()
+		createNodeSheet()
 	}
 	if cfg.Sheets.Machines {
-		getMachines()
+		createMachineSheet()
 	}
 	if cfg.Sheets.Namespaces {
-		getNamespaces()
+		createNamespaceSheet()
 	}
 	if cfg.Sheets.Nsquotas {
-		getNamespaceQuotas()
+		createQuotaSheet()
 	}
 	if cfg.Sheets.Pvolumes {
-		getPVolumes()
+		createPVolumeSheet()
 	}
 	if cfg.Sheets.Daemonsets {
-		getDaemonsets()
+		createDaemonsetSheet()
 	}
 	if cfg.Sheets.Routes {
-		getRoutes()
+		createRouteSheet()
 	}
 	if cfg.Sheets.Services {
-		getServices()
+		createServiceSheet()
+	}
+	if cfg.Sheets.Deployments {
+		createDeploymentSheet()
 	}
 	if cfg.Sheets.Pods {
-		getPods()
+		createPodSheet()
 	}
+	createSummarySheet()
 
 	xf.SetActiveSheet(xf.GetSheetIndex("Clusters"))
-	//sheetSummary()
 
 	// Save excel file and quit
 	fileName := "ocinfo_" + currentTime.Format("20060102") + ".xlsx"
 	err := xf.SaveAs(fileName)
-	perror(err)
-	info.Printf("OCinfo successfully terminated")
+	if err != nil {
+		erro.Println("Report cannot be created. Reason: ", err)
+	} else {
+		info.Println("Report exported as", fileName)
+		info.Println("OCinfo successfully terminated")
+	}
+
 }

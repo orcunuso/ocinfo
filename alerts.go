@@ -10,7 +10,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func getAlerts() {
+func createAlertSheet() {
 	var csvHeader = []string{"Cluster", "Alert", "Severity", "Instance", "StartTime", "EndTime", "Message", "State"}
 	var csvData []string
 	var startTime time.Time

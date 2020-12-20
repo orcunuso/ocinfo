@@ -8,7 +8,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func getPods() {
+func createPodSheet() {
 	var csvHeader = []string{"Cluster", "Namespace", "PodName", "ContainerName", "Phase", "PodIP", "NodeName", "#Restart", "#Sidecar", "#InitCon",
 		"SCC", "ServiceAccount", "DNSPolicy", "RestartPolicy", "ImagePullPolicy", "Image", "RunAsUser", "qosClass",
 		"CPU.Req", "CPU.Lim", "MEM.Req", "MEM.Lim", "CreationDate", "Version", "UID"}

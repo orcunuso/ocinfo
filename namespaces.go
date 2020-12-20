@@ -36,7 +36,7 @@ func getPodCount(apiurl string, token string) (int, int) {
 	return podTotal, podRunning
 }
 
-func getNamespaces() {
+func createNamespaceSheet() {
 
 	var csvHeader = []string{"Cluster", "Name", "Type", "DisplayName", "Description", "Requester", "NodeSelector", "SCC.MCS", "SCC.UIDRange", "RequestID", "ServiceID",
 		"EgressIP", "TotalPods", "RunningPods", "CreationDate", "Version", "UID"}

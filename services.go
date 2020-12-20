@@ -17,7 +17,7 @@ func getSvcPorts(result gjson.Result) string {
 	return ports
 }
 
-func getServices() {
+func createServiceSheet() {
 	var csvHeader = []string{"Cluster", "Namespace", "Name", "Type", "ClusterIP", "ExternalIP", "Ports", "Affinity", "CreationDate", "Version", "UID"}
 	var csvData []string
 	var startTime time.Time

@@ -21,7 +21,7 @@ func getAccessModes(result gjson.Result) string {
 	return modes
 }
 
-func getPVolumes() {
+func createPVolumeSheet() {
 	var csvHeader = []string{"Cluster", "Name", "Status", "Capacity", "AccessModes", "ReclaimPolicy", "ClaimedBy", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time

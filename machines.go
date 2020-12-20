@@ -19,7 +19,7 @@ func calculateMemoryGB(memory string) int {
 	return x / 1024
 }
 
-func getMachines() {
+func createMachineSheet() {
 
 	var csvHeader = []string{"Cluster", "Name", "Phase", "InstanceState", "NodeRef", "VmID", "ProviderID", "CPUCores", "RAMGB", "OSDisk", "CreationDate", "Version", "UID"}
 	var csvData []interface{}

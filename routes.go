@@ -7,7 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func getRoutes() {
+func createRouteSheet() {
 	var csvHeader = []string{"Cluster", "Namespace", "Name", "Hostname", "Path", "Target", "TargetPort", "WildcardPolicy", "TLS.Termination",
 		"TLS.EdgeTermination", "CreationDate", "Version", "UID"}
 	var csvData []string

@@ -150,7 +150,7 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 	}
 }
 
-func getNamespaceQuotas() {
+func createQuotaSheet() {
 
 	var csvHeader = []string{"Cluster", "Namespace", "Hard.CPUReq", "Hard.CPULim", "Hard.MEMReq", "Hard.MEMLim", "Used.CPUReq", "Used.CPULim",
 		"Used.MEMReq", "Used.MEMLim", "Real.CPU.5m", "Real.CPU.1h", "Real.CPU.6h", "Real.CPU.24h", "Real.MEM.5m", "Real.MEM.1h",

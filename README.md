@@ -54,6 +54,7 @@ sheets:
   routes: true
   pvolumes: true
   pods: true
+  deployments: true
 ```
 
 * The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.

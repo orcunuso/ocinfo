@@ -50,7 +50,7 @@ func getAvailableVersion(result gjson.Result) string {
 	return sv
 }
 
-func getClusters() {
+func createClusterSheet() {
 	var csvHeader = []string{"Cluster", "APIURL", "Version", "Channel", "Available", "#Nodes", "IngressIP", "CNI", "Pod CIDR", "ServiceCIDR", "HostPrefix", "ClusterID"}
 	var csvData []interface{}
 	var startTime time.Time

@@ -21,4 +21,5 @@ sheets:
   routes: true
   pvolumes: true
   pods: true
+  deployments: true
 
