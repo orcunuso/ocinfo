@@ -87,7 +87,7 @@ func checkClusterAPI(apiurl string, token string) (bool, string) {
 // This function autofits the width of all columns in a sheet. Normally this is supposed to be a more complicated algorithm
 // as the width of all characters in all font types greatly differ so this is the best it can get with minimal effort (especially with
 // monospaced fonts like Consolas)
-func autoFit(f *excelize.File, sheet string) {
+func autoFit(f *excelize.File, sheet string, width, height float64) {
 	var max int = 0
 	var ilk int = 0
 	var i, j int = 1, 1
@@ -112,15 +112,15 @@ func autoFit(f *excelize.File, sheet string) {
 		cn, _ := excelize.ColumnNumberToName(i)
 
 		if ilk == max {
-			f.SetColWidth(sheet, cn, cn, (float64(max)*0.9)+3)
+			f.SetColWidth(sheet, cn, cn, (float64(max)*width)+3)
 		} else {
-			f.SetColWidth(sheet, cn, cn, (float64(max)*0.9)+1)
+			f.SetColWidth(sheet, cn, cn, (float64(max)*width)+1)
 		}
 		i++
 	}
 
 	for rows.Next() {
-		f.SetRowHeight(sheet, j, 13)
+		f.SetRowHeight(sheet, j, height)
 		j++
 	}
 }
@@ -171,7 +171,7 @@ func formatTable(sheet string, colCount int) {
 		}]
 	}`)
 
-	autoFit(xf, sheet)
+	autoFit(xf, sheet, 0.9, 13)
 }
 
 // Conditional formatting function that takes the column and a slice of strings as conditions to be formatted. The values of the slice
@@ -196,4 +196,56 @@ func conditionalFormat5(sheet, col string, values []string) {
 			fmt.Println(err)
 		}
 	}
+}
+
+func createPivotTable(cell, sheet, col string) {
+	var csvData []interface{}
+	var csvHead = []string{""}
+	var keys []string
+	data := make(map[string]map[string]int)
+
+	xC, _ := excelize.ColumnNameToNumber(col)
+	rows, _ := xf.GetRows(sheet)
+	for xR := 1; xR < len(rows); xR++ {
+		c1, _ := excelize.CoordinatesToCellName(1, xR+1)
+		c2, _ := excelize.CoordinatesToCellName(xC, xR+1)
+		cls, _ := xf.GetCellValue(sheet, c1)
+		key, _ := xf.GetCellValue(sheet, c2)
+		//fmt.Println("Cell1:", c1, " Cell2:", c2, "--- ClusterName:", cls, "Alert Name:", key)
+		if _, ok := data[cls][key]; ok {
+			data[cls][key] = data[cls][key] + 1
+		} else {
+			for i := 0; i < len(cfg.Clusters); i++ {
+				if !cfg.Clusters[i].Enable {
+					continue
+				}
+				if len(data[cfg.Clusters[i].Name]) == 0 {
+					data2 := make(map[string]int)
+					data2[key] = 0
+					data[cfg.Clusters[i].Name] = data2
+				} else {
+					data[cfg.Clusters[i].Name][key] = 0
+				}
+			}
+			csvHead = append(csvHead, key)
+			keys = append(keys, key)
+			data[cls][key] = data[cls][key] + 1
+		}
+	}
+	//fmt.Println(data)
+
+	xf.SetSheetRow("Summary", cell, &csvHead)
+	xC, xR, _ := excelize.CellNameToCoordinates(cell)
+
+	for cls := range data {
+		csvData = nil
+		csvData = append(csvData, cls)
+		for _, key := range keys {
+			csvData = append(csvData, data[cls][key])
+		}
+		c, _ := excelize.CoordinatesToCellName(xC, xR+1)
+		xf.SetSheetRow("Summary", c, &csvData)
+		xR++
+	}
+	autoFit(xf, "Summary", 0.9, 13)
 }
