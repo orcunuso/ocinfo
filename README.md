@@ -101,8 +101,7 @@ Once you have fulfilled the requirements, you can get the result spreadsheet doc
 
 This tool is still at early stages and there are many improvements on my mind from which I can list a few as;
 
-* Increase the variety of resources to extract (like ingresses, deployments, daemonsets, etc)
-* Summary sheet is left blank intentionally. Future releases will have pivots and charts to summarize sheets.
+* Increase the variety of resources to extract (like ingresses or custom resources)
 * OpenShift 4.6 support, especially with OVNKubernetes CNI.
 * Query default Prometheus instance, scrape more data and provide metrics in proper sheets
 
