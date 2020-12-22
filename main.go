@@ -135,7 +135,7 @@ func main() {
 	}
 	createSummarySheet()
 
-	xf.SetActiveSheet(xf.GetSheetIndex("Clusters"))
+	xf.SetActiveSheet(xf.GetSheetIndex("Summary"))
 
 	// Save excel file and quit
 	fileName := "ocinfo_" + currentTime.Format("20060102") + ".xlsx"
