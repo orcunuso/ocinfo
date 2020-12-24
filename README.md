@@ -61,6 +61,35 @@ sheets:
 * It makes sense to differentiate the namespaces for reporting purposes, like application and system namespaces. Easy way to achieve that is to label all application namespaces with a specific label and let OCinfo query that label and decide according to its existance. Appnslabel serves that purpose.
 * The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item.
 
+### S3 Upload
+
+You can also upload the resulting file to a S3 compatible storage. If not desired, output part can be fully omitted and in that case, only a report file on local filesystem will be created. AWS and Minio providers are supported.
+
+For AWS S3, add this YAML part to configuration:
+
+```yaml
+output:
+  s3:
+    provider: "aws"
+    region: "us-west-1"
+    bucket: "ocinfo"
+    accessKeyID: "abcdefgh"
+    secretAccessKey: "Hg7sRl0......1xDmMc2e43"
+```
+
+For Minio:
+
+```yaml
+output:
+  s3:
+    provider: "minio"
+    endpoint: "https://minio.orcunuso.io:9100"
+    region: "my-region"
+    bucket: "ocinfo"
+    accessKeyID: "abcdefgh"
+    secretAccessKey: "Hg7sRl0......1xDmMc2e43"
+```
+
 ### Creating service accounts
 
 OCinfo needs a service account that has readonly permissions to get data from OpenShift and **cluster-reader** cluster role is a very proper candidate for this task but there is only one requirement that this role does not fulfill. OCinfo needs to read secrets, to be more specific, needs to get the token of openshift-monitoring/prometheus-k8s service account. So we need to create a custom cluster role that we can derive from cluster-reader and only grant additional read permissions to secrets.

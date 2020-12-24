@@ -22,4 +22,11 @@ sheets:
   pvolumes: true
   pods: true
   deployments: true
-
+output:
+  s3:
+    provider: "minio"
+    endpoint: "https://minio.orcunuso.io:9100"
+    region: "my-region"
+    bucket: "ocinfo"
+    accessKeyID: "abcdefgh"
+    secretAccessKey: "Hg7sRl0......1xDmMc2e43"

@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const version string = "v0.1.2"
+const version string = "v1.0.0"
 
 var currentTime time.Time = time.Now()
 
@@ -34,18 +34,28 @@ type Configuration struct {
 	} `yaml:"clusters"`
 	Appnslabel string `yaml:"appnslabel"`
 	Sheets     struct {
-		Alerts      bool `yaml:"alerts"`
-		Namespaces  bool `yaml:"namespaces"`
-		Nodes       bool `yaml:"nodes"`
-		Machines    bool `yaml:"machines"`
-		Nsquotas    bool `yaml:"nsquotas"`
-		Services    bool `yaml:"services"`
-		Routes      bool `yaml:"routes"`
-		Pvolumes    bool `yaml:"pvolumes"`
-		Daemonsets  bool `yaml:"daemonsets"`
-		Pods        bool `yaml:"pods"`
-		Deployments bool `yaml:"deployments"`
-	} `yaml:"sheets"`
+		Alerts      bool `yaml:"alerts,omitempty"`
+		Namespaces  bool `yaml:"namespaces,omitempty"`
+		Nodes       bool `yaml:"nodes,omitempty"`
+		Machines    bool `yaml:"machines,omitempty"`
+		Nsquotas    bool `yaml:"nsquotas,omitempty"`
+		Services    bool `yaml:"services,omitempty"`
+		Routes      bool `yaml:"routes,omitempty"`
+		Pvolumes    bool `yaml:"pvolumes,omitempty"`
+		Daemonsets  bool `yaml:"daemonsets,omitempty"`
+		Pods        bool `yaml:"pods,omitempty"`
+		Deployments bool `yaml:"deployments,omitempty"`
+	} `yaml:"sheets,omitempty"`
+	Output struct {
+		S3 struct {
+			Provider        string `yaml:"provider,omitempty"`
+			Endpoint        string `yaml:"endpoint,omitempty"`
+			Region          string `yaml:"region,omitempty"`
+			Bucket          string `yaml:"bucket,omitempty"`
+			AccessKeyID     string `yaml:"accessKeyID,omitempty"`
+			SecretAccessKey string `yaml:"secretAccessKey,omitempty"`
+		} `yaml:"s3"`
+	} `yaml:"output"`
 }
 
 func init() {
@@ -137,14 +147,19 @@ func main() {
 
 	xf.SetActiveSheet(xf.GetSheetIndex("Summary"))
 
-	// Save excel file and quit
+	// Save excel file and upload to S3 bucket
 	fileName := "ocinfo_" + currentTime.Format("20060102") + ".xlsx"
 	err := xf.SaveAs(fileName)
 	if err != nil {
 		erro.Println("Report cannot be created. Reason: ", err)
-	} else {
-		info.Println("Report exported as", fileName)
-		info.Println("OCinfo successfully terminated")
+		os.Exit(1)
 	}
+	info.Println("Report exported as", fileName)
+
+	if cfg.Output.S3.Provider != "" {
+		uploadFileS3(fileName)
+	}
+
+	info.Println("OCinfo successfully terminated")
 
 }

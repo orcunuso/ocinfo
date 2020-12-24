@@ -1,14 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 var (
@@ -248,4 +255,56 @@ func createPivotTable(cell, sheet, col string) {
 		xR++
 	}
 	autoFit(xf, "Summary", 0.9, 13)
+}
+
+func uploadFileS3(filename string) {
+	bucket := aws.String(cfg.Output.S3.Bucket)
+	key := aws.String(filename)
+	s3Config := aws.NewConfig()
+
+	if strings.EqualFold(cfg.Output.S3.Provider, "Minio") {
+		s3Config = &aws.Config{
+			Credentials:      credentials.NewStaticCredentials(cfg.Output.S3.AccessKeyID, cfg.Output.S3.SecretAccessKey, ""),
+			Endpoint:         aws.String(cfg.Output.S3.Endpoint),
+			Region:           aws.String(cfg.Output.S3.Region),
+			DisableSSL:       aws.Bool(true),
+			S3ForcePathStyle: aws.Bool(true),
+		}
+	} else if strings.EqualFold(cfg.Output.S3.Provider, "AWS") {
+		s3Config = &aws.Config{
+			Credentials: credentials.NewStaticCredentials(cfg.Output.S3.AccessKeyID, cfg.Output.S3.SecretAccessKey, ""),
+			Region:      aws.String(cfg.Output.S3.Region),
+		}
+	} else {
+		erro.Println("AWS or Minio are the only S3 providers right now. Please specify one of them")
+	}
+
+	newSession := session.New(s3Config)
+	s3Client := s3.New(newSession)
+
+	file, err := os.Open(filename)
+	if err != nil {
+		erro.Printf("Report file %s cannot be opened", filename)
+	}
+	defer file.Close()
+
+	fileInfo, _ := file.Stat()
+	size := fileInfo.Size()
+	buffer := make([]byte, size)
+	file.Read(buffer)
+	fileBytes := bytes.NewReader(buffer)
+	fileType := http.DetectContentType(buffer)
+
+	_, err = s3Client.PutObject(&s3.PutObjectInput{
+		Body:          fileBytes,
+		Bucket:        bucket,
+		Key:           key,
+		ContentLength: aws.Int64(size),
+		ContentType:   aws.String(fileType),
+	})
+	if err != nil {
+		erro.Printf("Failed to upload data to %s/%s, %s", *bucket, *key, err.Error())
+	} else {
+		info.Printf("Report file %s successfully uploaded to bucket %s with key %s", filename, *bucket, *key)
+	}
 }
