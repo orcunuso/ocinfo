@@ -73,9 +73,9 @@ func convert2Mebibytes(value string) float64 {
 	return -1
 }
 
-// This function queries default Prometheus instance and returns utilization of namespaces in different time ranges (5m, 1h, 6h, 24h)
+// This function queries default Prometheus instance and returns utilization of namespaces in different time ranges (5m, 1h, 8h)
 func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
-	var trs = []string{"5m", "1h", "6h", "24h"}
+	var trs = []string{"5m", "1h", "8h"}
 	var tri = 0
 	promurl := "https://prometheus-k8s-openshift-monitoring.apps." + strings.TrimLeft(strings.Split(baseurl, ":")[1], "//api.")
 	promurl += "/api/v1/query?query=x"
@@ -107,8 +107,8 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 			if found {
 				cm.prometrics[ns.String()].valuesCPU[tri] = math.Round(va.Float() * 1000)
 			} else {
-				scpu := make([]float64, 4)
-				smem := make([]float64, 4)
+				scpu := make([]float64, 3)
+				smem := make([]float64, 3)
 				pm := prometric{scpu, smem}
 				pm.valuesCPU[tri] = math.Round(va.Float() * 1000)
 				cm.prometrics[ns.String()] = pm
@@ -138,8 +138,8 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 			if found {
 				cm.prometrics[ns.String()].valuesMEM[tri] = math.Round(va.Float()*10) / 10
 			} else {
-				scpu := make([]float64, 4)
-				smem := make([]float64, 4)
+				scpu := make([]float64, 3)
+				smem := make([]float64, 3)
 				pm := prometric{scpu, smem}
 				pm.valuesMEM[tri] = math.Round(va.Float()*10) / 10
 				cm.prometrics[ns.String()] = pm
@@ -153,8 +153,8 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 func createQuotaSheet() {
 
 	var csvHeader = []string{"Cluster", "Namespace", "Hard.CPUReq", "Hard.CPULim", "Hard.MEMReq", "Hard.MEMLim", "Used.CPUReq", "Used.CPULim",
-		"Used.MEMReq", "Used.MEMLim", "Real.CPU.5m", "Real.CPU.1h", "Real.CPU.6h", "Real.CPU.24h", "Real.MEM.5m", "Real.MEM.1h",
-		"Real.MEM.6h", "Real.MEM.24h", "CreationDate", "Version", "UID"}
+		"Used.MEMReq", "Used.MEMLim", "Real.CPU.5m", "Real.CPU.1h", "Real.CPU.8h", "Real.MEM.5m", "Real.MEM.1h", "Real.MEM.8h",
+		"CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -218,7 +218,7 @@ func createQuotaSheet() {
 			csvData = append(csvData, convert2Milicores(vars[7].String())) // Used CPU Limits
 			csvData = append(csvData, convert2Mebibytes(vars[8].String())) // Used MEM Requests
 			csvData = append(csvData, convert2Mebibytes(vars[9].String())) // Used MEM Limits
-			if v, found := cms.prometrics[vars[1].String()]; found {       // Real CPU and MEM Usage (5m, 1h, 6h, 24h)
+			if v, found := cms.prometrics[vars[1].String()]; found {       // Real CPU and MEM Usage (5m, 1h, 8h)
 				for _, fval := range v.valuesCPU {
 					csvData = append(csvData, fval)
 				}
@@ -226,7 +226,7 @@ func createQuotaSheet() {
 					csvData = append(csvData, fval)
 				}
 			} else {
-				csvData = append(csvData, 0, 0, 0, 0, 0, 0, 0, 0)
+				csvData = append(csvData, 0, 0, 0, 0, 0, 0)
 			}
 			csvData = append(csvData, formatDate(vars[10].String())) // Creation Timestamp
 			csvData = append(csvData, vars[11].String())             // Resource Version
