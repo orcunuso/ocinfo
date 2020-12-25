@@ -1,6 +1,6 @@
 ![OCinfo](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo.png?raw=true)
 
-OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple container platforms and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
+OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple container platforms and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file or upload to S3 bucket. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
 
 OCinfo runs best with OpenShift 4.4 and 4.5, support for new features of OpenShift 4.6 like OVNKubernetes is on the roadmap. 
 
@@ -137,6 +137,8 @@ This tool is still at early stages and there are many improvements on my mind fr
 ## Contribution
 
 Any contribution or suggestion that would help this tool more useful and efficient are welcome!
+
+If you find this repo useful, please do not forget to 🌟.
 
 ## Contact
 
