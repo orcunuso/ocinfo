@@ -42,9 +42,12 @@ func color(colorString string) func(...interface{}) string {
 	return sprint
 }
 
-func perror(err error) {
+func perror(err error, exit bool) {
 	if err != nil {
-		erro.Println(err.Error())
+		erro.Println(red(err.Error()))
+		if exit {
+			os.Exit(1)
+		}
 	}
 }
 
@@ -56,11 +59,11 @@ func getRest(url string, token string) ([]byte, int) {
 	transport := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	client := &http.Client{Transport: transport}
 	response, err := client.Do(request)
-	perror(err)
+	perror(err, false)
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
-	perror(err)
+	perror(err, false)
 	return body, response.StatusCode
 }
 

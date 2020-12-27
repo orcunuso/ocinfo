@@ -9,8 +9,8 @@ OCinfo runs best with OpenShift 4.4 and 4.5, support for new features of OpenShi
 If you have an installed go environment, you can get source code and compile.
 
 ```bash
-go get github.com/vorcunus/ocinfo
-cd $GOPATH/src/github.com/vorcunus/ocinfo
+go get github.com/orcunuso/ocinfo
+cd $GOPATH/src/github.com/orcunuso/ocinfo
 make compile_all
 ```
 

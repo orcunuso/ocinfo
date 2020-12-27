@@ -74,9 +74,9 @@ func init() {
 	}
 
 	configBytes, err := ioutil.ReadFile(ff)
-	perror(err)
+	perror(err, true)
 	err = yaml.Unmarshal(configBytes, &cfg)
-	perror(err)
+	perror(err, true)
 
 	xsh0, _ = xf.NewStyle(`{
 		"font": {"family": "Consolas", "size": 8, "color": "#FFFFFF", "bold": true},

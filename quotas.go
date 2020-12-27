@@ -83,7 +83,7 @@ func (cm *clusterMetric) queryPrometheus(baseurl, token string) {
 	for _, tr := range trs {
 		// Query CPU usage
 		u, err := url.Parse(promurl)
-		perror(err)
+		perror(err, false)
 		q := u.Query()
 		q.Set("query", "sum(rate(container_cpu_usage_seconds_total{image!=\"\"}["+tr+"])) by (namespace)")
 		u.RawQuery = q.Encode()
