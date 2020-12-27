@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/ocinfo
 
 ############################################# Image Build Stage
 
-FROM scratch
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
 ARG APPLICATION="ocinfo"
 ARG REFNAME="orcunuso/ocinfo"
 
