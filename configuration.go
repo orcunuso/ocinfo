@@ -16,6 +16,7 @@ type Configuration struct {
 	Clusters []struct {
 		Name      string `yaml:"name"`
 		Version   string `yaml:"version,omitempty"`
+		Provider  string `yaml:"provider,omitempty"`
 		Enable    bool   `yaml:"enable"`
 		BaseURL   string `yaml:"baseURL"`
 		Token     string `yaml:"token"`

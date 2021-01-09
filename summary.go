@@ -106,5 +106,5 @@ func createSummarySheet() {
 	xf.SetCellStyle(sheet, "B18", "B18", xsr2)
 	autoFit(xf, "Summary", 1.33, 16)
 
-	createNodesChart(sheet, "E2", "Number of Nodes", "Clusters", "F")
+	createNodesChart(sheet, "E2", "Number of Nodes", "Clusters", "H")
 }

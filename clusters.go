@@ -50,14 +50,50 @@ func getAvailableVersion(result gjson.Result) string {
 	return sv
 }
 
+func getInfraDetails(body []byte, i int) string {
+	provider := gjson.GetBytes(body, `status.platformStatus.type`).String()
+	var vars []gjson.Result
+
+	// https://docs.openshift.com/container-platform/4.6/rest_api/config_apis/infrastructure-config-openshift-io-v1.html
+	switch provider {
+	case "oVirt":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.ovirt.apiServerInternalIP`,
+			`status.platformStatus.ovirt.ingressIP`, `status.platformStatus.ovirt.nodeDNSIP`)
+	case "VSphere":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.vsphere.apiServerInternalIP`,
+			`status.platformStatus.vsphere.ingressIP`, `status.platformStatus.vsphere.nodeDNSIP`)
+	case "OpenStack":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.openstack.apiServerInternalIP`,
+			`status.platformStatus.openstack.ingressIP`, `status.platformStatus.openstack.nodeDNSIP`)
+	case "BareMetal":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.baremetal.apiServerInternalIP`,
+			`status.platformStatus.baremetal.ingressIP`, `status.platformStatus.baremetal.nodeDNSIP`)
+	// For AWS, GCP and Azure, IP related fields will appear empty. I'll add provider specific specs in future releases.
+	case "AWS":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.aws.apiServerInternalIP`,
+			`status.platformStatus.aws.ingressIP`, `status.platformStatus.aws.nodeDNSIP`)
+	case "GCP":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.gcp.apiServerInternalIP`,
+			`status.platformStatus.gcp.ingressIP`, `status.platformStatus.gcp.nodeDNSIP`)
+	case "Azure":
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.azure.apiServerInternalIP`,
+			`status.platformStatus.azure.ingressIP`, `status.platformStatus.azure.nodeDNSIP`)
+	default:
+		vars = gjson.GetManyBytes(body, `status.infrastructureName`, `status.platform`, `status.platformStatus.#.apiServerInternalIP`,
+			`status.platformStatus.#.ingressIP`, `status.platformStatus.#.nodeDNSIP`)
+	}
+	return vars[i].String()
+}
+
 func createClusterSheet() {
-	var csvHeader = []string{"Cluster", "APIURL", "Version", "Channel", "Available", "#Nodes", "IngressIP", "CNI", "Pod CIDR", "ServiceCIDR", "HostPrefix", "ClusterID"}
+	var csvHeader = []string{"Cluster", "APIServerURL", "Version", "InfraName", "Platform", "Channel", "Available", "#Nodes", "APIServerIP",
+		"IngressIP", "NodeDNSIP", "CNI", "Pod CIDR", "ServiceCIDR", "HostPrefix", "ClusterID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
 	var xR int = 1
 	var sheetName string = "Clusters"
-	var apiurlVer, apiurlNod, apiurlNet string
+	var apiurlVer, apiurlNod, apiurlNet, apiurlInf string
 
 	// Initialize Excel sheet
 	index := xf.NewSheet(sheetName)
@@ -80,8 +116,10 @@ func createClusterSheet() {
 		apiurlVer = cfg.Clusters[i].BaseURL + "/apis/config.openshift.io/v1/clusterversions?limit=1000"
 		apiurlNod = cfg.Clusters[i].BaseURL + "/api/v1/nodes?limit=1000"
 		apiurlNet = cfg.Clusters[i].BaseURL + "/api/v1/namespaces/openshift-network-operator/configmaps/applied-cluster"
+		apiurlInf = cfg.Clusters[i].BaseURL + "/apis/config.openshift.io/v1/infrastructures/cluster"
 		rBody, _ := getRest(apiurlVer, cfg.Clusters[i].Token)
 		nBody, _ := getRest(apiurlNet, cfg.Clusters[i].Token)
+		iBody, _ := getRest(apiurlInf, cfg.Clusters[i].Token)
 
 		// Loop in list items and export data into Excel file
 		items := gjson.GetBytes(rBody, "items")
@@ -89,17 +127,20 @@ func createClusterSheet() {
 			vars := gjson.GetMany(value.String(), `spec.desiredUpdate.version`, `spec.channel`, `status.availableUpdates`, `spec.clusterID`)
 			data := gjson.GetBytes(nBody, "data.applied")
 
-			//	cfg.Clusters[i].Version = strings.Split(vars[0].String(), ".")[0] + "." + strings.Split(vars[0].String(), ".")[1]
-			//	info.Printf("%s: Working on %s with version %s\n", sheetName, cfg.Clusters[i].Name, cfg.Clusters[i].Version)
+			cfg.Clusters[i].Provider = getInfraDetails(iBody, 1)
 
 			csvData = nil
 			csvData = append(csvData, cfg.Clusters[i].Name)                                    // Cluster Name
 			csvData = append(csvData, cfg.Clusters[i].BaseURL)                                 // API URL
 			csvData = append(csvData, vars[0].String())                                        // Cluster Version
+			csvData = append(csvData, getInfraDetails(iBody, 0))                               // Infrastructure Name
+			csvData = append(csvData, cfg.Clusters[i].Provider)                                // Cloud Provider Name
 			csvData = append(csvData, vars[1].String())                                        // Cluster Update Channel
 			csvData = append(csvData, getAvailableVersion(vars[2]))                            // Available Updates
 			csvData = append(csvData, getNodeCount(apiurlNod, cfg.Clusters[i].Token))          // Number of Nodes
-			csvData = append(csvData, getIngressIP(cfg.Clusters[i].BaseURL))                   // Default Ingress IP
+			csvData = append(csvData, getInfraDetails(iBody, 2))                               // API Server IP
+			csvData = append(csvData, getInfraDetails(iBody, 3))                               // Default Ingress IP
+			csvData = append(csvData, getInfraDetails(iBody, 4))                               // Node DNS IP
 			csvData = append(csvData, gjson.Get(data.String(), "defaultNetwork.type"))         // CNI Type
 			csvData = append(csvData, gjson.Get(data.String(), "clusterNetwork.0.cidr"))       // Pod CIDR
 			csvData = append(csvData, gjson.Get(data.String(), "serviceNetwork.0"))            // Service CIDR
