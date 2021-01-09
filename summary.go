@@ -18,7 +18,12 @@ func printTotalCounts(sheet, cell, description, targetSheet string) {
 func printCondCounts(sheet, cell, description, targetSheet, targetCol, condition string) {
 	var count int = 0
 	var xR int = 1
-	rows, _ := xf.Rows(targetSheet)
+	rows, err := xf.Rows(targetSheet)
+	if err != nil {
+		xf.SetSheetRow(sheet, cell, &[]string{description, "N/A"})
+		return
+	}
+
 	for rows.Next() {
 		c := targetCol + strconv.Itoa(xR)
 		value, err := xf.GetCellValue(targetSheet, c)

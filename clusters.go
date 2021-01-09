@@ -76,7 +76,6 @@ func createClusterSheet() {
 			erro.Printf("%s: %s: %s\n", sheetName, cfg.Clusters[i].Name, msg)
 			continue
 		}
-		info.Printf("%s: Working on %s\n", sheetName, cfg.Clusters[i].Name)
 
 		apiurlVer = cfg.Clusters[i].BaseURL + "/apis/config.openshift.io/v1/clusterversions?limit=1000"
 		apiurlNod = cfg.Clusters[i].BaseURL + "/api/v1/nodes?limit=1000"
@@ -89,6 +88,9 @@ func createClusterSheet() {
 		items.ForEach(func(key, value gjson.Result) bool {
 			vars := gjson.GetMany(value.String(), `spec.desiredUpdate.version`, `spec.channel`, `status.availableUpdates`, `spec.clusterID`)
 			data := gjson.GetBytes(nBody, "data.applied")
+
+			//	cfg.Clusters[i].Version = strings.Split(vars[0].String(), ".")[0] + "." + strings.Split(vars[0].String(), ".")[1]
+			//	info.Printf("%s: Working on %s with version %s\n", sheetName, cfg.Clusters[i].Name, cfg.Clusters[i].Version)
 
 			csvData = nil
 			csvData = append(csvData, cfg.Clusters[i].Name)                                    // Cluster Name

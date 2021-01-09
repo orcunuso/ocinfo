@@ -59,9 +59,11 @@ func getRest(url string, token string) ([]byte, int) {
 	transport := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	client := &http.Client{Transport: transport}
 	response, err := client.Do(request)
-	perror(err, false)
+	if err != nil {
+		erro.Println(red(err.Error()))
+		return []byte("NoResponse"), -1
+	}
 	defer response.Body.Close()
-
 	body, err := ioutil.ReadAll(response.Body)
 	perror(err, false)
 	return body, response.StatusCode

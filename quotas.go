@@ -183,7 +183,7 @@ func createQuotaSheet() {
 
 		var cms clusterMetric
 		if cfg.Clusters[i].PromToken == "" {
-			warn.Printf("Alerts sheet is not enabled. To get Prometheus metrics, please enable Alerts in %s", ff)
+			warn.Printf("Prometheus token is empty. Alerts sheet needs to be enabled in %s to get the token", ff)
 		} else {
 			cms.prometrics = make(map[string]prometric)
 			cms.queryPrometheus(cfg.Clusters[i].BaseURL, cfg.Clusters[i].PromToken)
