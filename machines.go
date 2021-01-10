@@ -21,7 +21,8 @@ func calculateMemoryGB(memory string) int {
 
 func createMachineSheet() {
 
-	var csvHeader = []string{"Cluster", "Name", "Phase", "InstanceState", "NodeRef", "VmID", "ProviderID", "CPUCores", "RAMGB", "OSDisk", "CreationDate", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Name", "Type", "Phase", "InstanceState", "NodeRef", "VmID", "ProviderID", "CPUCores", "RAMGB",
+		"OSDisk", "CreationDate", "Version", "UID"}
 	var csvData []interface{}
 	var startTime time.Time
 	var duration time.Duration
@@ -62,6 +63,7 @@ func createMachineSheet() {
 			csvData = nil
 			csvData = append(csvData, cfg.Clusters[i].Name)                                  // Cluster Name
 			csvData = append(csvData, vars[0].String())                                      // Machine Name
+			csvData = append(csvData, cfg.Clusters[i].Provider)                              // Machine Provider Name
 			csvData = append(csvData, vars[1].String())                                      // Machine Phase
 			csvData = append(csvData, vars[2].String())                                      // Instance State
 			csvData = append(csvData, vars[3].String())                                      // Node Reference

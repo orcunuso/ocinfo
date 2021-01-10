@@ -20,6 +20,7 @@ var (
 )
 
 func init() {
+	debu = log.New(os.Stdout, "[D] ", log.Ldate|log.Ltime)
 	info = log.New(os.Stdout, "[I] ", log.Ldate|log.Ltime)
 	warn = log.New(os.Stdout, "[W] ", log.Ldate|log.Ltime)
 	erro = log.New(os.Stdout, "[E] ", log.Ldate|log.Ltime)
@@ -73,7 +74,7 @@ func init() {
 }
 
 func main() {
-	info.Println("========= Gathering data from clusters =========")
+	info.Println("====================== Gathering data from clusters ========================")
 
 	// Create excel sheets seperated for each resource types
 	createClusterSheet()
@@ -115,7 +116,7 @@ func main() {
 	xf.SetActiveSheet(xf.GetSheetIndex("Summary"))
 
 	// Save excel file and upload to S3 bucket
-	info.Println("========== Exporting data ==========")
+	info.Println("============================== Exporting data ==============================")
 	fileName := "ocinfo_" + currentTime.Format("20060102") + ".xlsx"
 	err := xf.SaveAs(fileName)
 	if err != nil {

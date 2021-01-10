@@ -19,6 +19,7 @@ import (
 )
 
 var (
+	debu *log.Logger
 	warn *log.Logger
 	info *log.Logger
 	erro *log.Logger

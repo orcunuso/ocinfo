@@ -130,9 +130,10 @@ Once you have fulfilled the requirements, you can get the result spreadsheet doc
 
 This tool is still at early stages and there are many improvements on my mind from which I can list a few as;
 
-* Increase the variety of resources to extract (like ingresses or custom resources)
+* More testing or support for different cluster-api providers other than oVirt
 * OpenShift 4.6 support, especially with OVNKubernetes CNI.
-* Query default Prometheus instance, scrape more data and provide metrics in proper sheets
+* More resources to extract (like storage classes, ingresses, custom resources, etc)
+* Better dashboards and/or summary reports
 
 ## Contribution
 

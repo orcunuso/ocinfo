@@ -9,6 +9,11 @@ import (
 
 const version string = "v1.0.0"
 
+var (
+	testedOCPVersions  = map[string]bool{"4.5": true}
+	testedOCPProviders = map[string]bool{"oVirt": true, "BareMetal": true}
+)
+
 var cfg Configuration // Configuration items from YAML file
 
 // Configuration struct to keep OCinfo properties extracted from YAML configuration file.
@@ -52,7 +57,7 @@ type Configuration struct {
 func validateConfig() error {
 	validated := true
 	info.Printf("OCinfo started with version %s", version)
-	info.Println("========= Validating configuration =========")
+	info.Println("======================== Validating configuration =========================")
 
 	// Check Clusters
 	validatedClusters := 0
@@ -70,7 +75,7 @@ func validateConfig() error {
 			continue
 		}
 
-		apiurl := cfg.Clusters[i].BaseURL + "/apis/config.openshift.io/v1/clusterversions?limit=1000"
+		apiurl := cfg.Clusters[i].BaseURL + "/apis/config.openshift.io/v1/clusterversions?limit=100"
 		body, _ := getRest(apiurl, cfg.Clusters[i].Token)
 		items := gjson.GetBytes(body, "items")
 		items.ForEach(func(key, value gjson.Result) bool {
@@ -85,6 +90,11 @@ func validateConfig() error {
 			warn.Printf(yellow(cfg.Clusters[i].Name, "-> Can't get cluster version. Something is wrong."))
 			continue
 		}
+
+		if _, ok := testedOCPVersions[cfg.Clusters[i].Version]; !ok {
+			warn.Printf(yellow(cfg.Clusters[i].Name, "-> OCinfo is not well tested for this version. You may expect empty values or inconsistent behaviors"))
+		}
+
 		validatedClusters++
 	}
 	info.Printf("There are %v cluster(s) properly configured\n", validatedClusters)

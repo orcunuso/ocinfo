@@ -128,6 +128,10 @@ func createClusterSheet() {
 			data := gjson.GetBytes(nBody, "data.applied")
 
 			cfg.Clusters[i].Provider = getInfraDetails(iBody, 1)
+			if _, ok := testedOCPProviders[cfg.Clusters[i].Provider]; !ok {
+				warn.Printf(yellow(cfg.Clusters[i].Name, "-> OCinfo is not well tested for this provider (", cfg.Clusters[i].Provider,
+					"). You may expect empty values or inconsistent behaviors on provider specific fields"))
+			}
 
 			csvData = nil
 			csvData = append(csvData, cfg.Clusters[i].Name)                                    // Cluster Name
