@@ -4,6 +4,8 @@ OCinfo is a tool written in pure Go that was influenced from the hassles of mana
 
 OCinfo runs best with OpenShift 4.4 and 4.5, support for new features of OpenShift 4.6 like OVNKubernetes is on the roadmap. 
 
+It's also well tested with oVirt provider. For other providers, this does not mean that OCinfo will not work, but still some unexpected behaviors might occur for provider specific resources like machines. Supportability for other infra providers is on the roadmap as well
+
 ## Installation
 
 If you have an installed go environment, you can get source code and compile.
