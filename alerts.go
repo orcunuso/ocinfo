@@ -19,6 +19,7 @@ func createAlertSheet() {
 	var sheetName string = "Alerts"
 	var apiurl string
 	var secret, token string
+	var status int
 
 	// Initialize Excel sheet
 	index := xf.NewSheet(sheetName)
@@ -54,7 +55,13 @@ func createAlertSheet() {
 
 		// Get token from secret resource
 		apiurl = cfg.Clusters[i].BaseURL + "/api/v1/namespaces/openshift-monitoring/secrets/" + secret
-		body, _ = getRest(apiurl, cfg.Clusters[i].Token)
+		body, status = getRest(apiurl, cfg.Clusters[i].Token)
+		if status == 403 {
+			warn.Println(yellow("Service Account used for OCinfo doesn't have permission to read secrets. Alerts and Prometheus metrics will not be displayed"))
+			cfg.Clusters[i].PromToken = ""
+			continue
+		}
+
 		r := gjson.GetBytes(body, `data.token`)
 		tb, _ := b64.StdEncoding.DecodeString(r.String())
 		token = string(tb)

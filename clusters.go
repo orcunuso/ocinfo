@@ -37,6 +37,10 @@ func getIngressIP(apiurl string) string {
 }
 
 func getAvailableVersion(result gjson.Result) string {
+	if !result.IsObject() {
+		return "UpToDate"
+	}
+
 	var sv string = "x.y.0"
 	result.ForEach(func(key, value gjson.Result) bool {
 		sx := gjson.Get(value.String(), `version`)
@@ -129,7 +133,7 @@ func createClusterSheet() {
 
 			cfg.Clusters[i].Provider = getInfraDetails(iBody, 1)
 			if _, ok := testedOCPProviders[cfg.Clusters[i].Provider]; !ok {
-				warn.Printf(yellow(cfg.Clusters[i].Name, "-> OCinfo is not well tested for this provider (", cfg.Clusters[i].Provider,
+				warn.Printf(yellow(cfg.Clusters[i].Name, " -> OCinfo is not well tested for this provider (", cfg.Clusters[i].Provider,
 					"). You may expect empty values or inconsistent behaviors on provider specific fields"))
 			}
 

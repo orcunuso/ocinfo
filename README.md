@@ -11,7 +11,7 @@ It's also well tested with oVirt provider. For other providers, this does not me
 If you have an installed go environment, you can get source code and compile.
 
 ```bash
-go get github.com/orcunuso/ocinfo
+go get -u github.com/orcunuso/ocinfo
 cd $GOPATH/src/github.com/orcunuso/ocinfo
 make compile_all
 ```

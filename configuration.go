@@ -63,7 +63,7 @@ func validateConfig() error {
 	validatedClusters := 0
 	for i := 0; i < len(cfg.Clusters); i++ {
 		if cfg.Clusters[i].Name == "" || cfg.Clusters[i].Token == "" {
-			warn.Printf(yellow(cfg.Clusters[i].Name, "-> Cluster name or token can't be empty. Omitting."))
+			warn.Printf(yellow(cfg.Clusters[i].Name, " -> Cluster name or token can't be empty. Omitting."))
 			continue
 		}
 		if cfg.Clusters[i].Enable == false {
@@ -71,7 +71,7 @@ func validateConfig() error {
 			continue
 		}
 		if strings.Index(cfg.Clusters[i].BaseURL, "https://") != 0 {
-			warn.Printf(yellow(cfg.Clusters[i].Name, "-> Cluster API URL does not start with https://. Omitting."))
+			warn.Printf(yellow(cfg.Clusters[i].Name, " -> Cluster API URL does not start with https://. Omitting."))
 			continue
 		}
 
@@ -87,12 +87,12 @@ func validateConfig() error {
 		if cfg.Clusters[i].Version != "" {
 			info.Printf("%s -> Cluster is running with version %s\n", cfg.Clusters[i].Name, cfg.Clusters[i].Version)
 		} else {
-			warn.Printf(yellow(cfg.Clusters[i].Name, "-> Can't get cluster version. Something is wrong."))
+			warn.Printf(yellow(cfg.Clusters[i].Name, " -> Can't get cluster version. Something is wrong."))
 			continue
 		}
 
 		if _, ok := testedOCPVersions[cfg.Clusters[i].Version]; !ok {
-			warn.Printf(yellow(cfg.Clusters[i].Name, "-> OCinfo is not well tested for this version. You may expect empty values or inconsistent behaviors"))
+			warn.Printf(yellow(cfg.Clusters[i].Name, " -> OCinfo is not well tested for this version. You may expect empty values or inconsistent behaviors"))
 		}
 
 		validatedClusters++
