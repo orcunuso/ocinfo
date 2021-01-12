@@ -2,9 +2,7 @@
 
 OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple container platforms and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file or upload to S3 bucket. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
 
-OCinfo runs best with OpenShift 4.4 and 4.5, support for new features of OpenShift 4.6 like OVNKubernetes is on the roadmap. 
-
-It's also well tested with oVirt provider. For other providers, this does not mean that OCinfo will not work, but still some unexpected behaviors might occur for provider specific resources like machines. Supportability for other infra providers is on the roadmap as well
+OCinfo runs best with OpenShift 4.5+. It's also well tested with oVirt provider. For other infra providers, this does not mean that OCinfo will not work, but still some unexpected behaviors might occur for provider specific resources like machines. Supportability for other infra providers is on the roadmap as well.
 
 ## Installation
 
@@ -115,11 +113,11 @@ oc sa get-token ocinfo -n ocinfo
 
 ```
 Usage of ocinfo:
-  -f <string>   Sets YAML file to configure OCinfo (default "ocinfo.yaml")
-  -v            Prints version
+  -f <string>   Optional. Sets YAML file to configure OCinfo (default "ocinfo.yaml")
+  -v            Optional. Prints version
 ```
 
-Once you have fulfilled the requirements, you can get the result spreadsheet document by just running the binary. Below is a screenshot on what the resulting file would look like:
+Once you have fulfilled the requirements, you can get the result spreadsheet document by just running the binary. Below is a screenshot of what the resulting file would look like:
 
 ![OCinfo Screenshot](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo-sshot1.png?raw=true)
 
@@ -132,16 +130,16 @@ Once you have fulfilled the requirements, you can get the result spreadsheet doc
 
 This tool is still at early stages and there are many improvements on my mind from which I can list a few as;
 
-* More testing or support for different cluster-api providers other than oVirt
-* OpenShift 4.6 support, especially with OVNKubernetes CNI.
+* More testing or support for different infrastructure providers other than oVirt
+* Works well with OpenShiftSDN but needs additional code to support OVNKubernetes.
 * More resources to extract (like storage classes, ingresses, custom resources, etc)
 * Better dashboards and/or summary reports
 
 ## Contribution
 
-Any contribution or suggestion that would help this tool more useful and efficient are welcome!
+Any contribution or suggestion that would help this tool more useful are welcome!!!
 
-If you find this repo useful, please do not forget to 🌟.
+If you like this repo, please do not forget to 🌟.
 
 ## Contact
 

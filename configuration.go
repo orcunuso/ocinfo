@@ -7,10 +7,10 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const version string = "v1.0.0"
+const version string = "v0.2.0"
 
 var (
-	testedOCPVersions  = map[string]bool{"4.5": true}
+	testedOCPVersions  = map[string]bool{"4.5": true, "4.6": true}
 	testedOCPProviders = map[string]bool{"oVirt": true, "BareMetal": true}
 )
 
