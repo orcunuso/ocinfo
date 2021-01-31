@@ -37,7 +37,7 @@ func getIngressIP(apiurl string) string {
 }
 
 func getAvailableVersion(result gjson.Result) string {
-	if !result.IsObject() {
+	if !result.Exists() {
 		return "UpToDate"
 	}
 

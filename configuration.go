@@ -7,7 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const version string = "v0.2.0"
+const version string = "v0.2.1"
 
 var (
 	testedOCPVersions  = map[string]bool{"4.5": true, "4.6": true}
@@ -28,8 +28,7 @@ type Configuration struct {
 		PromToken string `yaml:"promToken,omitempty"`
 		Quota     string `yaml:"quota"`
 	} `yaml:"clusters"`
-	Appnslabel string `yaml:"appnslabel"`
-	Sheets     struct {
+	Sheets struct {
 		Alerts      bool `yaml:"alerts,omitempty"`
 		Namespaces  bool `yaml:"namespaces,omitempty"`
 		Nodes       bool `yaml:"nodes,omitempty"`

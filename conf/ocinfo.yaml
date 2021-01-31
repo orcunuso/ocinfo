@@ -9,7 +9,6 @@ clusters:
   baseURL: "https://api.cluster2.orcunuso.io:6443"
   token: "eyJhbGciOiJSIk94.........RWNRb21fRHMwQkxBhdXliT2NQWF"
   quota: "quota-compute"
-appnslabel: "nslabel"
 sheets:
   alerts: true
   nodes: true

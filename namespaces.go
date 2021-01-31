@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -34,6 +35,19 @@ func getPodCount(apiurl string, token string) (int, int) {
 		return true
 	})
 	return podTotal, podRunning
+}
+
+func getNSType(name string) string {
+	var prefixes = []string{"openshift-", "kube-", "knative-"}
+	if (name == "default") || (name == "openshift") {
+		return "System"
+	}
+	for _, p := range prefixes {
+		if strings.Index(name, p) == 0 {
+			return "System"
+		}
+	}
+	return "Application"
 }
 
 func createNamespaceSheet() {
@@ -78,7 +92,7 @@ func createNamespaceSheet() {
 				`metadata.name`, `metadata.annotations.openshift\.io/display-name`, `metadata.annotations.openshift\.io/description`,
 				`metadata.annotations.openshift\.io/requester`, `metadata.annotations.openshift\.io/node-selector`,
 				`metadata.annotations.openshift\.io/sa\.scc\.mcs`, `metadata.annotations.openshift\.io/sa\.scc\.uid-range`,
-				`metadata.labels.tcrequestid`, `metadata.labels.tcserviceid`, `metadata.labels.`+cfg.Appnslabel,
+				`metadata.labels.tcrequestid`, `metadata.labels.tcserviceid`,
 				`metadata.creationTimestamp`, `metadata.resourceVersion`, `metadata.uid`)
 
 			ns := vars[0].String()
@@ -87,29 +101,25 @@ func createNamespaceSheet() {
 			csvData = nil
 			csvData = append(csvData, cfg.Clusters[i].Name) // Cluster Name
 			csvData = append(csvData, ns)                   // Namespace Name
-			if vars[9].String() != "" {                     // Namespace Type
-				csvData = append(csvData, "application")
-			} else {
-				csvData = append(csvData, "system")
-			}
-			csvData = append(csvData, vars[1].String()) // Namespace Display Name
-			csvData = append(csvData, vars[2].String()) // Namespace Description
-			csvData = append(csvData, vars[3].String()) // Namespace Requester
-			csvData = append(csvData, vars[4].String()) // Namespace NodeSelector
-			csvData = append(csvData, vars[5].String()) // Namespace SCC.MCS
-			csvData = append(csvData, vars[6].String()) // Namespace SCC.UID-Range
-			csvData = append(csvData, vars[7].String()) // Company Specific Label: RequestID
-			csvData = append(csvData, vars[8].String()) // Company Specific Label: ServiceID
-			if statusNet == 404 {                       // This probably means that OpenShiftSDN is not implemented
+			csvData = append(csvData, getNSType(ns))        // Namespace Type
+			csvData = append(csvData, vars[1].String())     // Namespace Display Name
+			csvData = append(csvData, vars[2].String())     // Namespace Description
+			csvData = append(csvData, vars[3].String())     // Namespace Requester
+			csvData = append(csvData, vars[4].String())     // Namespace NodeSelector
+			csvData = append(csvData, vars[5].String())     // Namespace SCC.MCS
+			csvData = append(csvData, vars[6].String())     // Namespace SCC.UID-Range
+			csvData = append(csvData, vars[7].String())     // Company Specific Label: RequestID
+			csvData = append(csvData, vars[8].String())     // Company Specific Label: ServiceID
+			if statusNet == 404 {                           // This probably means that OpenShiftSDN is not implemented
 				csvData = append(csvData, "NotImplemented")
 			} else {
 				csvData = append(csvData, getEgressIP(bodyNet, ns))
 			}
-			csvData = append(csvData, pt)                            // Total Pod Count
-			csvData = append(csvData, pr)                            // Running Pod Count
-			csvData = append(csvData, formatDate(vars[10].String())) // Creation Timestamp
-			csvData = append(csvData, vars[11].String())             // Resource Version
-			csvData = append(csvData, vars[12].String())             // UID
+			csvData = append(csvData, pt)                           // Total Pod Count
+			csvData = append(csvData, pr)                           // Running Pod Count
+			csvData = append(csvData, formatDate(vars[9].String())) // Creation Timestamp
+			csvData = append(csvData, vars[10].String())            // Resource Version
+			csvData = append(csvData, vars[11].String())            // UID
 
 			xR++
 			cell, _ := excelize.CoordinatesToCellName(1, xR)

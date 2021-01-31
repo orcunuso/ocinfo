@@ -1,4 +1,7 @@
-![OCinfo](https://github.com/vorcunus/ocinfo/blob/main/png/ocinfo.png?raw=true)
+![OCinfo](https://github.com/orcunuso/ocinfo/blob/main/png/ocinfo.png?raw=true)
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/orcunuso/ocinfo?include_prereleases&sort=semver&color=orange&style=plastic)
+![GitHub](https://img.shields.io/github/license/orcunuso/ocinfo?color=blue&style=plastic)
 
 OCinfo is a tool written in pure Go that was influenced from the hassles of managing multiple container platforms and the need to improve visibility. What it simple does is to get data from OpenShift APIs with the readonly credentials provided, prints out all the data in a pretty, human-readable and analyzable Microsoft Excel &trade; spreadsheet document and save it as a local xlsx file or upload to S3 bucket. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, MacOS, Windows and ARM.
 
@@ -42,7 +45,6 @@ clusters:
   baseURL: "https://api.cluster2.orcunuso.io:6443"
   token: "eyJhbGciOiJSIk94.........RWNRb21fRHMwQkxBhdXliT2NQWF"
   quota: "quota-compute"
-appnslabel: "nslabel"
 sheets:
   alerts: true
   nodes: true
@@ -57,9 +59,8 @@ sheets:
   deployments: true
 ```
 
-* The best practice is to create a resource quota resource within every namespace, preferably with the help of default project template. So "quota" key defines that default resource quota in that cluster.
-* It makes sense to differentiate the namespaces for reporting purposes, like application and system namespaces. Easy way to achieve that is to label all application namespaces with a specific label and let OCinfo query that label and decide according to its existance. Appnslabel serves that purpose.
 * The booleans under "sheets" define if we need to get data from related resources. If true, OCinfo will create seperate sheets for every item.
+* The best practice is to create a ResourceQuota within every namespace, preferably with the help of default project template. So "quota" key defines that default ResourceQuota resource name in that cluster.
 
 ### S3 Upload
 

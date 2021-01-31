@@ -18,7 +18,8 @@ func getSvcPorts(result gjson.Result) string {
 }
 
 func createServiceSheet() {
-	var csvHeader = []string{"Cluster", "Namespace", "Name", "Type", "ClusterIP", "ExternalIP", "Ports", "Affinity", "CreationDate", "Version", "UID"}
+	var csvHeader = []string{"Cluster", "Namespace", "Name", "Type", "SVCType", "ClusterIP", "ExternalIP", "Ports", "Affinity",
+		"CreationDate", "Version", "UID"}
 	var csvData []string
 	var startTime time.Time
 	var duration time.Duration
@@ -59,7 +60,8 @@ func createServiceSheet() {
 			csvData = append(csvData, cfg.Clusters[i].Name)         // Cluster Name
 			csvData = append(csvData, vars[0].String())             // Namespace Name
 			csvData = append(csvData, vars[1].String())             // Service Name
-			csvData = append(csvData, vars[2].String())             // Type
+			csvData = append(csvData, getNSType(vars[0].String()))  // Namespace Type
+			csvData = append(csvData, vars[2].String())             // Service Type
 			csvData = append(csvData, vars[3].String())             // ClusterIP
 			csvData = append(csvData, vars[4].String())             // ExternalIP
 			csvData = append(csvData, getSvcPorts(vars[5]))         // Ports
